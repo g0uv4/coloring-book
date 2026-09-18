@@ -12,7 +12,7 @@ The list tells them what they can say `只改X` / `拿掉X` / `眼鏡再簡` abo
 - 眼鏡
 - 頭髮（馬尾 / 瀏海 / …）
 - 衣服條紋
-- 砧板 / 雞刀
+- 帽子 / 手錶
 - 雲朵 / 穹頂
 ```
 
