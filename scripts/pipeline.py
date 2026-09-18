@@ -2,7 +2,9 @@
 """One-process cleanup → QC → vector PDF. Avoids three interpreter starts.
 
 Usage:
-  python3 scripts/pipeline.py plate-raw.png --out-dir run --pdf plate-a4.pdf
+  python3 scripts/pipeline.py plate-raw.png --out-dir run
+  python3 scripts/pipeline.py plate-raw.png --out-dir run --pdf plate-a4.pdf   # only after the user confirms
+
 """
 from __future__ import annotations
 
@@ -36,7 +38,7 @@ def main() -> int:
     out.mkdir(parents=True, exist_ok=True)
     clean = out / "plate-clean.png"
     svg = out / "plate.svg"
-    pdf = args.pdf or (out / "plate-a4.pdf")
+    pdf = args.pdf
     py = sys.executable
     rc = run(
         [
@@ -64,18 +66,22 @@ def main() -> int:
                 return 1
         elif rc != 0:
             return rc
+    print(f"PLATE {clean.resolve()}")
+    if not pdf and not args.jpeg:
+        print("STOP — show plate-clean.png in chat; compose PDF only after the user confirms")
+        return 0
     cmd = [
         py,
         str(ROOT / "vectorize_plate.py"),
         str(clean),
         str(svg),
-        "--pdf",
-        str(pdf),
         "--orientation",
         args.orientation,
         "--margin-mm",
         "14",
     ]
+    if pdf:
+        cmd += ["--pdf", str(pdf)]
     if args.jpeg:
         cmd += ["--jpeg", str(args.jpeg)]
     return run(cmd)

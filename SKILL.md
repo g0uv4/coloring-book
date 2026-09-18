@@ -4,8 +4,8 @@ description: Convert an uploaded photograph into a coloring-book page. Inventory
 license: MIT
 compatibility: Grok, Codex, Claude, any agent with image generation plus a filesystem
 metadata:
-  version: "1.9.0"
-  short-description: Photo to Open-Line Plate; vector A4 PDF after confirm
+  version: "1.9.3"
+  short-description: Photo to Open-Line Plate; preview PNG in chat; vector A4 PDF after confirm
   author: g0uv4
 ---
 
@@ -24,6 +24,7 @@ If no photograph is attached, ask for one and stop.
 - Generate the plate **once**. QC overlay only if machine FAIL.
 - After confirm: `vectorize_plate.py` → PDF. Do **not** also run `compose_a4_pdf.py` unless vectorize fails.
 - Cleanup long-edge default 2400 is enough. Do not upscale to 4K.
+- Never run `pipeline.py --pdf` before the user confirms the PNG in chat.
 
 ## Locked style
 
@@ -31,7 +32,7 @@ Read [references/style-guide.md](references/style-guide.md) and [references/inte
 
 Medium-thick black ink, paper-white interiors, closed loops. Intensity changes **which photo parts you keep**, not line density.
 
-No gray fills, no broken lines, no clip-art flames, no mandala hatch, no knit/wood/brick texture grids. Textures = one closed slab.
+No gray fills, no broken lines, no clip-art flames, no mandala hatch, no knit/wood/brick texture grids. Textures = one closed slab. Filled-black subjects (B&W photo / silhouette) are not a coloring book.
 
 | Intensity | When |
 |---|---|
@@ -79,11 +80,17 @@ python3 scripts/qc_plate.py plate-clean.png --report qc-report.json
 
 Add `--overlay qc-overlay.png` **only** on FAIL.
 
-SHIP → preview. First fail → one retry (or re-cleanup if the only fail is jaggies). Second fail → stop, no PDF.
+SHIP → preview. First fail → one retry (or re-cleanup if the only fail is jaggies). Second fail → stop, no PDF. A filled B&W photo / silhouette is FAIL — regenerate, do not PDF.
 
 ### 6. Preview — wait
 
-Show `plate-clean.png` + 圖片元素 ([references/element-list.md](references/element-list.md)). Ask whether to output A4 PDF, print pack, or edit an element. **Do not compose PDF in this turn.**
+**Attach `plate-clean.png` in the chat** so the user sees the line art without opening a PDF. Then list 圖片元素 ([references/element-list.md](references/element-list.md)). Ask whether to output A4 PDF, print pack, or edit an element.
+
+Hard rules for this turn:
+
+- Do **not** run `vectorize_plate.py`, `compose_a4_pdf.py`, or `pipeline.py --pdf`.
+- Do **not** attach a PDF yet. The PNG is the preview.
+- If QC FAIL because the plate is a filled B&W photo / silhouette, say so and regenerate. Do not hide the fail inside a PDF.
 
 | User | Action |
 |---|---|
