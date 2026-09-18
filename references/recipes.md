@@ -6,21 +6,22 @@ Load the matching section **before** the inventory card.
 
 ## pet
 
-- Species silhouette first (cat loaf, dog sit, rabbit huddle) as a **closed outline**. The body stays **paper white** so a crayon can color it.
-- Dark fur / black cat / black dog is **not** an excuse to fill the body black. Black is only the outline.
-- Eyes: two ovals + a round pupil. No wet-eye shine stacks.
-- Fur = 3–8 clumps as closed shapes, never strand hair, never a solid black coat.
+- Species silhouette first (cat loaf, dog sit, rabbit huddle).
+- Eyes: two ovals + iris. No wet-eye shine stacks.
+- Fur = 3–8 **white** clumps with a black outline. Never strand hair. Never fill the body black, even if the photo is a black cat or black dog.
+- Dark pets stay colorable: body, ears, tail, and legs are empty white interiors.
 - Collar / tag / bow as 1–2 closed loops. Tag lettering omitted.
-- Whiskers: omit on simple; medium 2 per side; advanced **3–6 closed or single-stroke whiskers total per side**, stop at 6. Whiskers are lines, not filled wedges.
-- White chest / socks / blaze stay their own closed white pockets.
+- Whiskers: at most 3 closed-looking lines per side at advanced; omit on simple. Do not hatch a whisker pad.
+- Nose / mouth as small closed shapes, not a filled muzzle mask.
 - Background: one floor plane + optional cushion. No carpet weave.
-- If the model paints the cat black, that plate is QC FAIL — regenerate with the filled-poster add-on.
 
-## dark object (black clothes, dark furniture, dark hair)
+## dark-object (black clothes, black hair, dark furniture, night sky)
 
-- Same law as a black cat: the dark thing in the photo becomes a **white pocket with a black outline**, not a silhouette.
-- Hair stays clumps. Clothes stay garment blocks. A black sofa is a sofa outline.
-- Do not use gray fill to “show it was dark”.
+- A dark thing in the photo is still a **white pocket** on the plate. Only the outline is black.
+- Black hair = 4–8 white clumps, never a filled helmet.
+- Black shirt / trousers / sofa / cabinet = one or two closed slabs, white inside.
+- Night sky or dark wall = empty page or one light horizon band, not a painted black field.
+- Shadows are omitted. Do not invent a gray or black puddle under the subject.
 
 ## food
 
@@ -39,7 +40,7 @@ Load the matching section **before** the inventory card.
 - Cutting board = one rounded rectangle. Wood grain **forbidden** (one slab).
 - Bottles = cylinder + cap. Labels omitted.
 - Knit mitt / dish towel = one garment shape, no stitch grid.
-- Use `--kind group` or `--kind object` in QC (looser speckle than portrait).
+- Use `--kind group` or `--kind object` in QC (looser speckle than portrait) only if the script accepts `--kind`. Otherwise default QC.
 
 ## architecture
 
@@ -52,4 +53,4 @@ Load the matching section **before** the inventory card.
 
 ## Shared texture law
 
-Knit, wood, brick, grass, fur, water sparkle → **one closed mass**. If a line would speckle QC, omit it. A mass is still **white inside**.
+Knit, wood, brick, grass, fur, water sparkle → **one closed mass**. If a line would speckle QC, omit it. Dark photo regions still stay white inside the mass.
