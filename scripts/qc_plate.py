@@ -4,8 +4,9 @@
 Hard rules:
   1. lines are continuous (few dangling skeleton endpoints)
   2. colorable regions are closed (crayon-sized gaps do not leak)
+  3. ink is outlines — large solid fills / silhouettes FAIL (not a coloring book)
 
-Extra gates: ink purity, region size, speckle, stroke thickness.
+Extra gates: ink purity, region size, speckle, stroke thickness, fill-core.
 
 Exit 0 on QC PASS, 1 on QC FAIL. JSON on stdout.
 """
@@ -73,7 +74,6 @@ def neighbor_count(mask: np.ndarray) -> np.ndarray:
 
 def zhang_suen(ink: np.ndarray, max_iter: int = 24) -> np.ndarray:
     img = ink.copy()
-    h, w = img.shape
     for _ in range(max_iter):
         changed = False
         for step in (0, 1):
@@ -214,7 +214,7 @@ def analyze(path: Path) -> dict:
     interior = [int(a) for a in areas0[1:] if a >= min_region]
     if interior:
         interior.sort(reverse=True)
-        colorable = interior[1:]  # drop background
+        colorable = interior[1:]
     else:
         colorable = []
 
@@ -223,6 +223,13 @@ def analyze(path: Path) -> dict:
     speckle = int(((b_areas[1:] > 0) & (b_areas[1:] < 5)).sum()) if b_areas.size > 1 else 0
 
     remain = float(erode4(ink).sum()) / float(ink.sum()) if ink.sum() else 0.0
+    core = ink
+    for _ in range(3):
+        core = erode4(core)
+    core_frac = float(core.mean())
+    core_remain = float(core.sum()) / float(ink.sum()) if ink.sum() else 0.0
+    _clab, c_areas = label_bool(core)
+    largest_core = float(c_areas[1:].max() / (h * w)) if c_areas.size > 1 else 0.0
 
     return {
         "path": str(path.resolve()),
@@ -235,6 +242,9 @@ def analyze(path: Path) -> dict:
         "white_frac": round(white / n, 4),
         "mid_frac": round(mid / n, 4),
         "ink_frac_qc": round(ink_frac, 4),
+        "ink_core_frac": round(core_frac, 4),
+        "ink_core_remain": round(core_remain, 4),
+        "largest_fill_frac": round(largest_core, 4),
         "skeleton_px": skel_px,
         "endpoints": end_px,
         "isolated_ink": iso_px,
@@ -250,6 +260,7 @@ def analyze(path: Path) -> dict:
         "_iso_mask": iso_mask,
         "_leak_mask": leak_mask,
         "_ink": ink,
+        "_core": core,
     }
 
 
@@ -258,16 +269,24 @@ def judge(report: dict) -> list[str]:
     w, h = report["dimensions"]
     if w < 400 or h < 400:
         fails.append("image too small for print")
-    if report["white_frac"] < 0.50:
-        fails.append("not enough paper-white area to color")
+    if report["white_frac"] < 0.62:
+        fails.append("not enough paper-white area to color — interiors must stay white")
     if report["black_frac"] < 0.012:
         fails.append("almost no ink — generation likely failed")
-    if report["black_frac"] > 0.32:
-        fails.append("too much solid black — hair/clothes may be filled")
+    if report["black_frac"] > 0.20:
+        fails.append("too much solid black — this is a B&W poster, not a coloring book")
+    if report.get("ink_core_remain", 0) > 0.42:
+        fails.append(
+            "solid black fills survive after eroding strokes — silhouette / filled photo, not outlines"
+        )
+    if report.get("ink_core_frac", 0) > 0.04:
+        fails.append("large filled regions (body/background painted black) — leave interiors white")
+    if report.get("largest_fill_frac", 0) > 0.025:
+        fails.append("a solid black blob is too big to be a line — not colorable")
     if report["mid_frac"] > 0.18:
         fails.append("too much gray — looks like a sketch or photo, not a plate")
-    if report["mean_luma"] < 170:
-        fails.append("overall too dark for a coloring page")
+    if report["mean_luma"] < 188:
+        fails.append("overall too dark for a coloring page — white interiors missing")
     if report["max_luma"] < 230:
         fails.append("background is not paper white")
 
@@ -302,6 +321,9 @@ def save_overlay(dest: Path, report: dict) -> None:
     rgb[leak] = (232, 140, 32)
     mark = dilate(report["_end_mask"] | report["_iso_mask"], times=2)
     rgb[mark] = (200, 32, 32)
+    core = report.get("_core")
+    if core is not None and core.any():
+        rgb[core] = (90, 40, 160)
     Image.fromarray(rgb, "RGB").save(dest, "PNG")
 
 
@@ -312,6 +334,7 @@ def public_report(report: dict, fails: list[str]) -> dict:
         "legend": {
             "overlay_red": "dangling line ends / isolated ink",
             "overlay_orange": "regions that only close after sealing crayon-sized gaps",
+            "overlay_purple": "solid fill cores that should have been white",
         },
     }
 
@@ -321,6 +344,7 @@ def main() -> int:
     parser.add_argument("input", type=Path)
     parser.add_argument("--overlay", type=Path, help="PNG with dangling ends (red) and leaks (orange)")
     parser.add_argument("--report", type=Path, help="Write JSON report")
+    parser.add_argument("--kind", default="scene", help="Ignored; kept so SKILL flags do not crash")
     args = parser.parse_args()
     if not args.input.is_file():
         print(json.dumps({"ok": False, "fails": ["missing file"]}))
