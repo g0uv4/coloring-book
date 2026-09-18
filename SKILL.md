@@ -1,17 +1,17 @@
 ---
 name: coloring-book
-description: Convert an uploaded photograph into a coloring-book page. Inventory first, show the plate PNG in chat, wait. A4 PDF only after the user confirms. Use when they upload a photo and ask for a coloring book, coloring page, 著色本, 著色頁, 線稿, or line art for coloring. Never grayscale, never fill interiors black, never PDF before confirmation.
+description: Convert an uploaded photograph into a coloring-book page. Inventory first, QC, then preview. A4 vector PDF only after the user confirms. Use when they upload a photo and ask for a coloring book, coloring page, 著色本, 著色頁, 線稿, or line art for coloring. Never grayscale or edge-detect. Never PDF before confirmation.
 license: MIT
-compatibility: Grok, Codex, Claude Code, Kimi, Antigravity, Gemini CLI, Cursor, Copilot, OpenCode, any agent with an image tool plus a filesystem
+compatibility: Grok, Codex, ChatGPT, Claude Code, Antigravity, Gemini CLI, Kimi, Cursor, any agent with image generation plus a filesystem
 metadata:
   version: "1.9.4"
-  short-description: Photo to Open-Line Plate; host-native image tool; preview PNG; vector A4 PDF after confirm
+  short-description: Photo to Open-Line Plate; host image backend; preview PNG then PDF
   author: g0uv4
 ---
 
 # Coloring Book (Open-Line Plate)
 
-Translate one uploaded photo into a printable coloring page. **Wait** on the keep/omit card. After QC, attach `plate-clean.png` in chat and **wait**. Compose an A4 PDF only after they agree.
+Translate one uploaded photo into a printable coloring page. **Wait** on the keep/omit card. After QC, show the plate + 圖片元素 and **wait**. Compose an A4 PDF only after they agree.
 
 Not a website. Not a multi-photo book. Never tell the user to type `/memory-with-docs`.
 
@@ -30,7 +30,7 @@ If no photograph is attached, ask for one and stop.
 
 Read [references/style-guide.md](references/style-guide.md) and [references/intensity.md](references/intensity.md).
 
-Medium-thick black outlines, paper-white interiors, closed loops. Intensity changes **which photo parts you keep**, not line density.
+Medium-thick black ink, paper-white interiors, closed loops. Intensity changes **which photo parts you keep**, not line density.
 
 No gray fills, no broken lines, no clip-art flames, no mandala hatch, no knit/wood/brick texture grids. Textures = one closed slab. Filled-black subjects (B&W photo / silhouette) are not a coloring book.
 
@@ -58,30 +58,23 @@ Memory: [references/style-memory.md](references/style-memory.md) — recall sile
 
 [references/inventory-card.md](references/inventory-card.md). Show keep/omit. **Stop.** Skip wait only for a simple headshot with ≤ 4 facts already listed.
 
-### 3. Generate — this host's image tool
+### 3. Generate
 
-Read [references/image-backend.md](references/image-backend.md) and [references/prompt-templates.md](references/prompt-templates.md).
+Read [references/image-backend.md](references/image-backend.md). Then [references/prompt-templates.md](references/prompt-templates.md) + confirmed keep list.
 
-Use the image tool **already attached to this session**. Do not call another vendor. Do not invent an API.
+Same Open-Line prompt. Image-to-image on `USER_PHOTO` only. Route by host:
 
 | Host | Tool |
 |---|---|
-| Grok / SuperGrok | `imagine_image_to_image` / Imagine |
-| OpenAI harness / Codex | `image_gen` / `$imagegen` (ChatGPT Images) |
-| Antigravity / Gemini CLI | Nano Banana Pro, else Nano Banana 2 |
-| Kimi Agent / OK Computer | `generate_image` |
-| Claude Code | whatever image skill or MCP this session already has |
-| Cursor / Copilot / OpenCode / Cline / others | that host's image-edit tool, or the first generate/edit-image tool you can see |
+| Grok / SuperGrok | Imagine |
+| OpenAI harness / Codex / ChatGPT | ChatGPT Images |
+| Antigravity / Gemini CLI | Nano Banana |
+| Kimi / Kimi Code | Kimi built-in image generation |
+| Claude Code | first connected image tool (MCP / plugin) |
+| Cursor / Windsurf / Cline / OpenCode / Copilot | first image-to-image tool in this session |
+| Anything else | that host's native image-edit tool |
 
-Always image-to-image on `USER_PHOTO` when the tool accepts a reference. Aspect 2:3 or 3:2. Save `plate-raw.png`. No third-party style images.
-
-Put this in the image prompt every time:
-
-```
-OUTLINES ONLY. Interiors stay pure white. Do not fill fur, hair, clothes, furniture, or sky with black. A dark subject is still a white shape with a medium outline. This is a coloring book, not a black-and-white poster.
-```
-
-If this harness has no image tool, stop and say so.
+Aspect 2:3 or 3:2. No third-party style images. Save as `plate-raw.png`. Name the backend in the preview note.
 
 ### 4. Cleanup
 
