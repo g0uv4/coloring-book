@@ -8,18 +8,16 @@ from pathlib import Path
 REQUIRED_FILES = [
     "SKILL.md",
     "references/style-guide.md",
-    "references/analysis-method.md",
-    "references/prompt-templates.md",
-    "references/portrait-rules.md",
-    "references/pdf-spec.md",
     "references/intensity.md",
+    "references/inventory-card.md",
+    "references/element-list.md",
     "references/qc-inspector.md",
-    "references/quality-checklist.md",
     "references/style-memory.md",
+    "references/ibon-print.md",
     "scripts/cleanup_lines.py",
     "scripts/compose_a4_pdf.py",
     "scripts/qc_plate.py",
-    "scripts/validate_coloring.py",
+    "scripts/vectorize_plate.py",
 ]
 
 
@@ -31,13 +29,20 @@ def main() -> int:
         pillow = True
     except ImportError:
         pillow = False
+    try:
+        import numpy  # noqa: F401
+        numpy_ok = True
+    except ImportError:
+        numpy_ok = False
 
-    if missing or not pillow:
+    if missing or not pillow or not numpy_ok:
         print("INSTALL FAIL")
         for rel in missing:
             print(f"  missing {rel}")
         if not pillow:
             print("  Pillow is not importable")
+        if not numpy_ok:
+            print("  numpy is not importable")
         return 1
     print(f"INSTALL PASS {root}")
     return 0
