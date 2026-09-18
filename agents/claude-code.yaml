@@ -1,0 +1,4 @@
+interface:
+  display_name: Coloring Book
+  short_description: Translate a photo into an Open-Line Plate. Show the PNG in chat; A4 PDF only after confirm.
+  default_prompt: "Use $coloring-book on my uploaded photograph. Use whatever image skill or MCP this Claude Code session already has. Open-Line Plate, white interiors, show the PNG, wait for PDF confirm."
