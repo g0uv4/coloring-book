@@ -5,35 +5,37 @@
 | | Portrait | Landscape |
 |---|---|---|
 | Size | 210 × 297 mm | 297 × 210 mm |
-| Default | Portrait | Use when the plate is clearly wider than tall |
-| Print raster | 300 dpi → 2480 × 3508 px (portrait) | 3508 × 2480 px |
-| Margins | 14 mm on all sides | same |
+| Default | Portrait | Only when the plate is clearly wider than tall |
+| Print raster | 300 dpi → 2480 × 3508 px | 3508 × 2480 px |
+| Margins | 14 mm | same |
 | Page color | `#FFFFFF` | same |
 
-The artwork is **fitted** (not cropped, not stretched) inside the margin box and centered. Letterboxing stays white.
+Artwork is **fitted** (never cropped, never stretched). Letterboxing stays white.
 
-## Chrome
+## Ink, not JPEG
 
-Default: **no** page number, no logo, no "Inkplate" mark on the artwork.
+The PDF page must be **1-bit CCITT** (Pillow `mode="1"`). Do not store the page as JPEG (`DCTDecode`). JPEG ringing is what looks like 鋸齒 on gantry beams when the user zooms or prints landscape.
 
-Optional `--title` draws a single muted line in the bottom margin, outside the plate. Use only when the user asked for a title or a book name.
+Pipeline that keeps lines smooth:
 
-Never overlay text on the drawing.
+1. `cleanup_lines.py` LANCZOS-upscales the **grayscale** plate to `--min-long-edge 3200`, optional `--smooth 1.2`, **then** thresholds.
+2. `compose_a4_pdf.py` fits that plate into the A4 box, snaps back to black/white, writes a 1-bit PDF.
 
-## Script
+Never threshold a ~1200 px plate and then stretch it onto A4.
 
 ```bash
+python3 scripts/cleanup_lines.py plate-raw.png plate-clean.png \
+  --threshold 128 --min-long-edge 3200 --smooth 1.2
 python3 scripts/compose_a4_pdf.py plate-clean.png plate-a4.pdf \
-  --dpi 300 --margin-mm 14 --orientation auto \
+  --dpi 300 --margin-mm 14 --orientation auto --nup 1 \
   --preview plate-a4.png
 ```
 
-Success prints `DELIVERY PASS` and the PDF path.
+## Chrome
 
-## Print advice to the user (one line)
+Default: no page number, no logo on the artwork.
+`--title` is a single black line in the bottom margin, only if asked.
 
-Print at 100% scale on A4, no "fit to page" crop, draft or normal quality is enough. Crayons prefer uncoated paper.
+## Print advice
 
-## Multi-page books
-
-One plate per page, identical margins. Cover page only if the user asked for a book title.
+Print at 100% on A4, no “fit to page” crop. Uncoated paper for crayons.

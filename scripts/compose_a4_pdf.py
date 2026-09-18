@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Place a coloring plate onto a print-ready A4 PDF (and optional PNG preview).
 
-The plate is fitted inside printer-safe margins on a pure white page.
-Nothing in the artwork is redrawn. Optional --nup 2|4 tiles copies for kids.
+Fit inside printer-safe margins on a white page. Never stretch.
+The page is stored as 1-bit CCITT — never JPEG — so diagonals stay crisp.
 """
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 
 try:
-    from PIL import Image, ImageDraw, ImageFont
+    from PIL import Image, ImageDraw, ImageFilter, ImageFont
 except ImportError as exc:  # pragma: no cover
     raise SystemExit("Pillow is required: python -m pip install Pillow") from exc
 
@@ -39,6 +39,18 @@ def load_font(size: int) -> ImageFont.ImageFont:
         except OSError:
             continue
     return ImageFont.load_default()
+
+
+def crisp_resize(art: Image.Image, fit_w: int, fit_h: int) -> Image.Image:
+    """Scale then snap back to ink/paper. Avoids LANCZOS gray ramps and 1-bit stairs."""
+    gray = art.convert("L")
+    if gray.size != (fit_w, fit_h):
+        gray = gray.resize((fit_w, fit_h), Image.Resampling.LANCZOS)
+        gray = gray.filter(ImageFilter.GaussianBlur(radius=0.8))
+        gray = gray.point(lambda p: 0 if p < 160 else 255, mode="L")
+    else:
+        gray = gray.point(lambda p: 0 if p < 160 else 255, mode="L")
+    return Image.merge("RGB", (gray, gray, gray))
 
 
 def compose(
@@ -78,7 +90,7 @@ def compose(
     tile_w = (inner_w - gutter * (cols - 1)) // cols
     tile_h = (inner_h - gutter * (rows - 1)) // rows
     fit_w, fit_h = fit_inside(art_w, art_h, tile_w, tile_h)
-    fitted = art.resize((fit_w, fit_h), Image.Resampling.LANCZOS)
+    fitted = crisp_resize(art, fit_w, fit_h)
 
     for r in range(rows):
         for c in range(cols):
@@ -96,10 +108,11 @@ def compose(
         tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
         tx = (page_w - tw) // 2
         ty = page_h - margin - title_band + (title_band - th) // 2
-        draw.text((tx, ty), text, fill=(90, 86, 80), font=font)
+        draw.text((tx, ty), text, fill=(0, 0, 0), font=font)
 
     pdf_out.parent.mkdir(parents=True, exist_ok=True)
-    page.save(pdf_out, "PDF", resolution=float(dpi))
+    # mode "1" → CCITT in the PDF (lossless). RGB/L would be JPEG and jag the ink.
+    page.convert("1").save(pdf_out, "PDF", resolution=float(dpi))
     if preview is not None:
         preview.parent.mkdir(parents=True, exist_ok=True)
         page.save(preview, "PNG", optimize=True)
