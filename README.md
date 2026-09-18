@@ -70,7 +70,10 @@ See [`references/intensity.md`](references/intensity.md).
 2. Translate to Open-Line Plate  
 3. Cleanup + QC inspector  
 4. **Show the plate and wait**  
-5. On confirm → A4 PDF (300 dpi, 14 mm margins)
+5. On confirm → A4 PDF (300 dpi, 14 mm margins)  
+6. On like / 記住這個風格 → `$memory-with-docs` stores the profile for next time
+
+See [`references/style-memory.md`](references/style-memory.md).
 
 Machine QC: [`scripts/qc_plate.py`](scripts/qc_plate.py)  
 SOP: [`references/qc-inspector.md`](references/qc-inspector.md)

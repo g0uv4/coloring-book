@@ -4,7 +4,7 @@ description: Convert an uploaded photograph into a coloring-book page at simple,
 license: MIT
 compatibility: Grok, Codex, Claude, any agent with image generation plus a filesystem
 metadata:
-  version: "1.5.0"
+  version: "1.6.0"
   short-description: Photo to Open-Line Plate coloring page; A4 PDF only after user confirms
   author: Inkplate
 ---
@@ -95,7 +95,15 @@ Read [references/portrait-rules.md](references/portrait-rules.md) whenever a fac
 
 ### 2b. Pick intensity
 
-Use the table above. If unspecified, `medium`.
+Read [references/style-memory.md](references/style-memory.md). Recall this user's Grok memory for `$coloring-book`.
+
+- Remembered **default intensity** applies if this turn does not name one.
+- Remembered extra locks (no cartoon fire, no knit texture, …) always apply unless this turn contradicts them.
+- This-turn words win. Skill table above is the fallback when memory is empty (`medium`).
+
+### 2c. Remembered style overlay
+
+If a profile exists, add its extra locks into the inventory `Do not draw` line. Do not skip QC because memory exists.
 
 ### 3. Generate the plate
 
@@ -152,11 +160,20 @@ On the next message:
 
 | User says | Action |
 |---|---|
-| 可以 / 輸出 / PDF / 列印 / OK / yes / ship | step 7 |
+| 可以 / 輸出 / PDF / 列印 / OK / yes / ship | step 6b, then 7 |
 | 再改、加／減元件、換強度、臉不對… | back to step 3 with those notes, then QC, then step 6 again |
+| 記住這個風格 / 以後都這樣 | step 6b only (PDF still needs an explicit yes) |
 | 取消 | stop, no PDF |
 
 Keep the last `plate-clean.png` path so PDF composition does not need a new generation.
+
+### 6b. Persist style (`$memory-with-docs`)
+
+When they **like** the plate or give a standing rule, read [references/style-memory.md](references/style-memory.md) and invoke **`$memory-with-docs`** (`/memory-with-docs`) with that payload.
+
+- Replace the previous coloring-book profile; do not append duplicates.
+- Do not store the photo or who is in it.
+- Then continue to step 7 if they also asked for a PDF in the same message.
 
 ### 7. Compose A4 PDF
 
@@ -199,4 +216,5 @@ One photo = one page. Several photos = one plate each, same intensity. Confirm *
 - [references/qc-inspector.md](references/qc-inspector.md) — 品管人員 (closed lines + extra gates)
 - [references/quality-checklist.md](references/quality-checklist.md) — pass/fail summary
 - [references/examples-index.md](references/examples-index.md) — worked examples
+- [references/style-memory.md](references/style-memory.md) — persist taste via `$memory-with-docs`
 

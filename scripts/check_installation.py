@@ -15,6 +15,7 @@ REQUIRED_FILES = [
     "references/intensity.md",
     "references/qc-inspector.md",
     "references/quality-checklist.md",
+    "references/style-memory.md",
     "scripts/cleanup_lines.py",
     "scripts/compose_a4_pdf.py",
     "scripts/qc_plate.py",
