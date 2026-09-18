@@ -43,7 +43,7 @@ After the plate:
 |---|---|
 | 輸出 PDF | A4 PDF only — does **not** change default intensity |
 | 兩格 / 四格 / 直式 | print pack (`--nup 2\|4` or `--orientation portrait`) |
-| 只改砧板 | local redraw of that region |
+| 只改某一塊 | redraw only that one part |
 | 記住這個風格 / 以後都用高階 | store default intensity |
 | 忘記著色本設定 | delete stored profile |
 
