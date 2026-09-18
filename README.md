@@ -1,6 +1,8 @@
 # Coloring Book — Super Grok skill
 
-A portable `SKILL.md` pack named **`coloring-book`** (`v1.8.0`). Upload a photograph; the agent shows a keep/omit card, translates it into an **Open-Line Plate**, shows it, and **waits**. An A4 PDF is composed only after you confirm.
+[English](README.md) | [繁體中文](README.zh-TW.md)
+
+A portable `SKILL.md` pack named **`coloring-book`**. Upload a photograph; the agent shows a keep/omit card, translates it into an **Open-Line Plate**, lists recognized image elements, and **waits**. An A4 PDF is composed only after you confirm.
 
 This is a **skill**, not a website. Do not deploy it as an app. Do not merge many photos into one book.
 
@@ -45,6 +47,8 @@ After the plate:
 | 記住這個風格 / 以後都用高階 | store default intensity |
 | 忘記著色本設定 | delete stored profile |
 
+The coordinator writes style memory itself. You never type a memory command.
+
 ## Intensity
 
 | | simple | medium | advanced |
@@ -60,10 +64,10 @@ See [`references/intensity.md`](references/intensity.md).
 1. Inventory the photo + subject recipe  
 2. Show keep/omit card and wait  
 3. Translate to Open-Line Plate  
-4. Cleanup + QC (`qc_plate.py --kind …`)  
-5. Show the plate and wait  
+4. Cleanup + QC (closed lines, no leaks, **smooth ink**)  
+5. Show the plate + image elements and wait  
 6. On 輸出 PDF → A4 (`compose_a4_pdf.py --nup 1\|2\|4`)  
-7. On 記住這個風格 → two-layer memory
+7. Coordinator persists standing style and repeated habits
 
 Machine QC: [`scripts/qc_plate.py`](scripts/qc_plate.py)  
 `validate_coloring.py` is deprecated.
