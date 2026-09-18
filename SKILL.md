@@ -1,44 +1,47 @@
 ---
 name: coloring-book
-description: Convert an uploaded photograph into a coloring-book page. Inventory first, QC, then preview. A4 vector PDF only after the user confirms. Use when they upload a photo and ask for a coloring book, coloring page, 著色本, 著色頁, 線稿, or line art for coloring. Never grayscale or edge-detect. Never PDF before confirmation.
+description: Convert an uploaded photograph into a coloring-book page. For a pet or portrait, draw in the same turn and embed the PNG in chat. A4 PDF only after the user confirms. Use when they upload a photo and ask for a coloring book, coloring page, 著色本, 著色頁, 線稿, or line art for coloring. Never fill interiors black. Never PDF before confirmation.
 license: MIT
-compatibility: Grok, Codex, ChatGPT, Claude Code, Antigravity, Gemini CLI, Kimi, Cursor, any agent with image generation plus a filesystem
+compatibility: Grok, Codex, ChatGPT, Claude Code, Antigravity, Gemini CLI, Kimi, Cursor, any agent with an image tool plus a filesystem
 metadata:
-  version: "1.9.4"
-  short-description: Photo to Open-Line Plate; host image backend; preview PNG then PDF
+  version: "1.9.5"
+  short-description: Photo to Open-Line Plate; embed PNG in chat; vector A4 PDF after confirm
   author: g0uv4
 ---
 
 # Coloring Book (Open-Line Plate)
 
-Translate one uploaded photo into a printable coloring page. **Wait** on the keep/omit card. After QC, show the plate + 圖片元素 and **wait**. Compose an A4 PDF only after they agree.
-
-Not a website. Not a multi-photo book. Never tell the user to type `/memory-with-docs`.
+Translate one uploaded photo into a printable coloring page.
 
 If no photograph is attached, ask for one and stop.
 
-## Speed (do this)
+Not a website. Not a multi-photo book. Never tell the user to type `/memory-with-docs`.
 
-- Run `check_installation.py` **once per session**, not every photo.
-- Load only the refs you need this turn. Do **not** open examples 01–07 unless the kind matches.
-- Generate the plate **once**. QC overlay only if machine FAIL.
-- After confirm: `vectorize_plate.py` → PDF. Do **not** also run `compose_a4_pdf.py` unless vectorize fails.
-- Cleanup long-edge default 2400 is enough. Do not upscale to 4K.
-- Never run `pipeline.py --pdf` before the user confirms the PNG in chat.
+## Hard stops
+
+1. Pet / portrait / one object + a photo → print a short keep list **and draw this turn**. Do not stop at the list. See [references/inventory-card.md](references/inventory-card.md).
+2. After QC, **embed `plate-clean.png` as an image in the chat**. A path, a PDF, or a list is not a preview. See [references/preview-in-chat.md](references/preview-in-chat.md).
+3. Preview turn: do **not** run `vectorize_plate.py`, `compose_a4_pdf.py`, or `pipeline.py --pdf`. Do not say 「走管線」.
+4. Dark fur / hair / clothes stay **white pockets** with outlines. A filled poster is QC FAIL. Retry once. Never hide it in a PDF.
+
+## Speed
+
+- `check_installation.py` once per session.
+- Load only the refs you need. Do not dump examples 01–07.
+- Generate once. QC overlay only on FAIL.
+- Cleanup `--min-long-edge 2400`.
 
 ## Locked style
 
-Read [references/style-guide.md](references/style-guide.md) and [references/intensity.md](references/intensity.md).
+[references/style-guide.md](references/style-guide.md) and [references/intensity.md](references/intensity.md).
 
-Medium-thick black ink, paper-white interiors, closed loops. Intensity changes **which photo parts you keep**, not line density.
-
-No gray fills, no broken lines, no clip-art flames, no mandala hatch, no knit/wood/brick texture grids. Textures = one closed slab. Filled-black subjects (B&W photo / silhouette) are not a coloring book.
+Medium-thick black outlines, paper-white interiors, closed loops. Hair, fur, clothes, furniture, sky stay white. Only pupils / a tiny nose / a button may be solid black.
 
 | Intensity | When |
 |---|---|
 | simple | 簡單 / 小孩 |
 | medium | default / 中等 |
-| advanced | 高階 / 更多元件 — more **named parts**, same stroke |
+| advanced | 高階 — more named parts, same stroke, still white interiors |
 
 ## Workflow
 
@@ -50,31 +53,33 @@ python3 scripts/check_installation.py
 
 ### 2. Inspect
 
-Read the photo. Worksheet: [references/analysis-method.md](references/analysis-method.md).
-Kind + recipe: [references/recipes.md](references/recipes.md) / [references/portrait-rules.md](references/portrait-rules.md) only if needed.
-Memory: [references/style-memory.md](references/style-memory.md) — recall silently. This-turn words win.
+[references/analysis-method.md](references/analysis-method.md).
+Pet / dark object: [references/recipes.md](references/recipes.md).
+Memory: [references/style-memory.md](references/style-memory.md) — recall silently.
 
-### 2d. Inventory card — wait
+### 2d. Inventory
 
-[references/inventory-card.md](references/inventory-card.md). Show keep/omit. **Stop.** Skip wait only for a simple headshot with ≤ 4 facts already listed.
+[references/inventory-card.md](references/inventory-card.md).
 
-### 3. Generate
+| Situation | Action |
+|---|---|
+| Pet, portrait, or one object + photo attached | Short keep/omit **and generate this turn** |
+| User said 先畫 / 給我看 / 直接畫 | Generate this turn |
+| Kitchen / group / clutter | Show the card and wait for `依這份畫` |
 
-Read [references/image-backend.md](references/image-backend.md). Then [references/prompt-templates.md](references/prompt-templates.md) + confirmed keep list.
+### 3. Generate — this host's image tool
 
-Same Open-Line prompt. Image-to-image on `USER_PHOTO` only. Route by host:
+[references/image-backend.md](references/image-backend.md) and [references/prompt-templates.md](references/prompt-templates.md).
 
 | Host | Tool |
 |---|---|
-| Grok / SuperGrok | Imagine |
-| OpenAI harness / Codex / ChatGPT | ChatGPT Images |
-| Antigravity / Gemini CLI | Nano Banana |
-| Kimi / Kimi Code | Kimi built-in image generation |
-| Claude Code | first connected image tool (MCP / plugin) |
-| Cursor / Windsurf / Cline / OpenCode / Copilot | first image-to-image tool in this session |
-| Anything else | that host's native image-edit tool |
+| Grok | Imagine / `imagine_image_to_image` |
+| OpenAI / Codex | `image_gen` / ChatGPT Images |
+| Antigravity / Gemini CLI | Nano Banana Pro, else Nano Banana 2 |
+| Kimi Agent | `generate_image` |
+| Claude Code / Cursor / others | first image-edit tool already in this session |
 
-Aspect 2:3 or 3:2. No third-party style images. Save as `plate-raw.png`. Name the backend in the preview note.
+Image-to-image on `USER_PHOTO`. Aspect 2:3 or 3:2. Save `plate-raw.png`. If no image tool exists, stop.
 
 ### 4. Cleanup
 
@@ -90,52 +95,34 @@ python3 scripts/cleanup_lines.py plate-raw.png plate-clean.png --threshold 128 -
 python3 scripts/qc_plate.py plate-clean.png --report qc-report.json
 ```
 
-Add `--overlay qc-overlay.png` **only** on FAIL.
+Overlay only on FAIL. Fill / too-dark / not-enough-white → retry with the dark-subject add-on. QC FAIL = show the PNG + reason, **no PDF**.
 
-SHIP → preview. First fail → one retry (or re-cleanup if the only fail is jaggies). Second fail → stop, no PDF. A filled B&W photo / silhouette is FAIL — regenerate, do not PDF.
+### 6. Preview in chat — wait
 
-### 6. Preview — wait
+[references/preview-in-chat.md](references/preview-in-chat.md) and [references/element-list.md](references/element-list.md).
 
-**Attach `plate-clean.png` in the chat** so the user sees the line art without opening a PDF. Then list 圖片元素 ([references/element-list.md](references/element-list.md)). Ask whether to output A4 PDF, print pack, or edit an element.
-
-Hard rules for this turn:
-
-- Do **not** run `vectorize_plate.py`, `compose_a4_pdf.py`, or `pipeline.py --pdf`.
-- Do **not** attach a PDF yet. The PNG is the preview.
-- If QC FAIL because the plate is a filled B&W photo / silhouette, say so and regenerate. Do not hide the fail inside a PDF.
+Embed `plate-clean.png`. List 圖片元素. Ask `要輸出成 A4 PDF 嗎？還是繼續修改？` Stop.
 
 | User | Action |
 |---|---|
-| 輸出 / PDF / 可以 | step 7. Do not write default intensity. |
-| 兩格 / 四格 / 直式 | step 7 with [print-pack.md](references/print-pack.md) |
-| 只改X | [local-redraw.md](references/local-redraw.md) then QC + preview |
-| 記住 / 以後都用X | coordinator writes memory. PDF still needs yes. |
-| 忘記著色本設定 | delete coloring-book profile |
+| 輸出 / PDF / 可以 | **next turn** step 7 |
+| 兩格 / 四格 / 直式 | next turn print-pack |
+| 只改X | [local-redraw.md](references/local-redraw.md) → QC → embed PNG again |
+| 記住 / 以後都用X | write memory. PDF still needs yes. |
 
 ### 6b. Memory
 
-Coordinator writes. Never name the tool to the user. Reply `已記住…`. Layer C: same habit twice this chat → persist. `輸出 PDF` does not change default intensity.
+Coordinator writes. Never name the tool. Reply `已記住…`. `輸出 PDF` does not change default intensity.
 
-### 7. Deliver — vector PDF for ibon
-
-[references/ibon-print.md](references/ibon-print.md) and [references/pdf-spec.md](references/pdf-spec.md).
+### 7. Deliver PDF — only after they said yes
 
 ```bash
 python3 scripts/vectorize_plate.py plate-clean.png plate.svg \
   --pdf plate-a4.pdf --orientation portrait --margin-mm 14
 ```
 
-Add `--jpeg plate-a4.jpg` only if they asked for a picture file.
-If vectorize fails:
-
-```bash
-python3 scripts/compose_a4_pdf.py plate-clean.png plate-a4.pdf \
-  --dpi 300 --margin-mm 14 --orientation portrait --nup 1
-```
-
-`--nup 2|4` uses compose (copies of the same plate), not vectorize.
-Never upload SVG to ibon. Tell them: A4 黑白一般用紙，100% / 實際大小。
+If vectorize fails, `compose_a4_pdf.py`. Never upload SVG to ibon.
 
 ## Safety
 
-Family photos are in scope. Refuse sexualized / gore / official character sheets. No watermarks. No other people's coloring pages in the repo.
+Family photos are in scope. Refuse sexualized / gore / official character sheets.
