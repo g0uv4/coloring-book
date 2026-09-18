@@ -6,12 +6,21 @@ Load the matching section **before** the inventory card.
 
 ## pet
 
-- Species silhouette first (cat loaf, dog sit, rabbit huddle).
-- Eyes: two ovals + iris. No wet-eye shine stacks.
-- Fur = 3–8 clumps, never strand hair.
+- Species silhouette first (cat loaf, dog sit, rabbit huddle) as a **closed outline**. The body stays **paper white** so a crayon can color it.
+- Dark fur / black cat / black dog is **not** an excuse to fill the body black. Black is only the outline.
+- Eyes: two ovals + a round pupil. No wet-eye shine stacks.
+- Fur = 3–8 clumps as closed shapes, never strand hair, never a solid black coat.
 - Collar / tag / bow as 1–2 closed loops. Tag lettering omitted.
-- Whiskers: at most 3 lines per side at advanced; omit on simple.
+- Whiskers: omit on simple; medium 2 per side; advanced **3–6 closed or single-stroke whiskers total per side**, stop at 6. Whiskers are lines, not filled wedges.
+- White chest / socks / blaze stay their own closed white pockets.
 - Background: one floor plane + optional cushion. No carpet weave.
+- If the model paints the cat black, that plate is QC FAIL — regenerate with the filled-poster add-on.
+
+## dark object (black clothes, dark furniture, dark hair)
+
+- Same law as a black cat: the dark thing in the photo becomes a **white pocket with a black outline**, not a silhouette.
+- Hair stays clumps. Clothes stay garment blocks. A black sofa is a sofa outline.
+- Do not use gray fill to “show it was dark”.
 
 ## food
 
@@ -43,4 +52,4 @@ Load the matching section **before** the inventory card.
 
 ## Shared texture law
 
-Knit, wood, brick, grass, fur, water sparkle → **one closed mass**. If a line would speckle QC, omit it.
+Knit, wood, brick, grass, fur, water sparkle → **one closed mass**. If a line would speckle QC, omit it. A mass is still **white inside**.
