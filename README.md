@@ -4,7 +4,7 @@
 
 A portable `SKILL.md` pack named **`coloring-book`**. Upload a photograph; the agent shows a keep/omit card, translates it into an **Open-Line Plate**, lists recognized image elements, and **waits**. An A4 PDF is composed only after you confirm.
 
-This is a **skill**, not a website. Do not deploy it as an app. Do not merge many photos into one book.
+This pack is a **skill**. Do not deploy it as an app. Do not merge many photos into one book.
 
 Public repo: [github.com/g0uv4/coloring-book](https://github.com/g0uv4/coloring-book)
 

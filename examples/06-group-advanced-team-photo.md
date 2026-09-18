@@ -80,4 +80,4 @@ Too empty for advanced → add named objects (lanyard, badge, notebook) as close
 ## Delivery note
 
 `QC SHIP / advanced / five people, lanyard+badge+notebook as closed shapes`
-Then ask: 這張線稿可以嗎？要輸出成 A4 PDF，還是要再改？
+Then ask: 要輸出成 A4 PDF 嗎？還是繼續修改？

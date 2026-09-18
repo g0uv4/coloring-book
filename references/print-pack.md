@@ -34,7 +34,7 @@ python3 scripts/compose_a4_pdf.py plate-clean.png plate-a4-4up.pdf \
 
 ## When to offer
 
-After they confirm the plate, if they say 小孩、課堂、一頁兩張、四格、直式列印 — use the matching pack. Do not invent a second different drawing.
+After they confirm the plate, if they say 小孩 / 課堂 / 一頁兩張 / 四格 / 直式列印 — use the matching pack. Do not invent a second different drawing.
 
 Do **not** merge different photos onto one PDF here. That book feature is out of scope.
 

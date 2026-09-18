@@ -3,7 +3,7 @@
 ## User request
 
 ```text
-家庭福利照變著色本，中等細節。四個人都要在。
+家庭合照變著色本，中等細節。四個人都要在。
 Family photo to coloring page, medium, keep all four people.
 ```
 
