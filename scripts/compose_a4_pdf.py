@@ -2,7 +2,7 @@
 """Place a coloring plate onto a print-ready A4 PDF (and optional PNG preview).
 
 The plate is fitted inside printer-safe margins on a pure white page.
-Nothing in the artwork is redrawn. Optional title sits in the bottom margin.
+Nothing in the artwork is redrawn. Optional --nup 2|4 tiles copies for kids.
 """
 from __future__ import annotations
 
@@ -49,26 +49,44 @@ def compose(
     margin_mm: float,
     title: str | None,
     force: str,
+    nup: int,
     preview: Path | None,
 ) -> None:
     art = Image.open(src).convert("RGB")
     art_w, art_h = art.size
+    if nup in (2, 4):
+        force = "portrait"
     landscape = force == "landscape" or (force == "auto" and art_w > art_h * 1.08)
     page_mm = A4_LANDSCAPE_MM if landscape else A4_PORTRAIT_MM
     page_w = mm_to_px(page_mm[0], dpi)
     page_h = mm_to_px(page_mm[1], dpi)
     margin = mm_to_px(margin_mm, dpi)
+    gutter = mm_to_px(8.0, dpi)
     title_band = mm_to_px(8.0, dpi) if title else 0
 
-    box_w = page_w - margin * 2
-    box_h = page_h - margin * 2 - title_band
-    fit_w, fit_h = fit_inside(art_w, art_h, box_w, box_h)
+    page = Image.new("RGB", (page_w, page_h), (255, 255, 255))
+    inner_w = page_w - margin * 2
+    inner_h = page_h - margin * 2 - title_band
+
+    if nup == 1:
+        cols, rows = 1, 1
+    elif nup == 2:
+        cols, rows = 1, 2
+    else:
+        cols, rows = 2, 2
+
+    tile_w = (inner_w - gutter * (cols - 1)) // cols
+    tile_h = (inner_h - gutter * (rows - 1)) // rows
+    fit_w, fit_h = fit_inside(art_w, art_h, tile_w, tile_h)
     fitted = art.resize((fit_w, fit_h), Image.Resampling.LANCZOS)
 
-    page = Image.new("RGB", (page_w, page_h), (255, 255, 255))
-    x = (page_w - fit_w) // 2
-    y = margin + (box_h - fit_h) // 2
-    page.paste(fitted, (x, y))
+    for r in range(rows):
+        for c in range(cols):
+            x0 = margin + c * (tile_w + gutter)
+            y0 = margin + r * (tile_h + gutter)
+            x = x0 + (tile_w - fit_w) // 2
+            y = y0 + (tile_h - fit_h) // 2
+            page.paste(fitted, (x, y))
 
     if title:
         draw = ImageDraw.Draw(page)
@@ -99,6 +117,13 @@ def main() -> int:
         choices=("auto", "portrait", "landscape"),
         default="auto",
     )
+    parser.add_argument(
+        "--nup",
+        type=int,
+        choices=(1, 2, 4),
+        default=1,
+        help="1 = one plate; 2 = two stacked copies; 4 = 2x2 copies",
+    )
     parser.add_argument("--preview", type=Path, default=None, help="Optional A4 PNG")
     args = parser.parse_args()
     if not args.input.is_file():
@@ -114,6 +139,7 @@ def main() -> int:
         margin_mm=args.margin_mm,
         title=args.title or None,
         force=args.orientation,
+        nup=args.nup,
         preview=args.preview,
     )
     print(f"DELIVERY PASS {args.output.resolve()}")
