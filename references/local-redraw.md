@@ -1,6 +1,6 @@
 # Local redraw — edit one region, keep the plate
 
-When the user says 只改X、臈不要動、fix the cutting board only, do **not** regenerate the whole page from the photo alone.
+When the user says 只改X / 其他不要動 / fix the cutting board only, do **not** regenerate the whole page from the photo alone.
 
 ## Inputs (required)
 

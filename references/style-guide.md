@@ -2,14 +2,14 @@
 
 One locked **line language** for every photo. Density is chosen from three intensities (`simple` / `medium` / `advanced`) — see [intensity.md](intensity.md). Do not invent extra styles (watercolor, manga tone, mandala, photoreal ink).
 
-## Thesis
+## What it is
 
 Rebuild the photograph as a **coloring-book illustration**. The page must look like it was inked for crayons or markers, not like a photo with the color sucked out.
 
 ## Ink and paper
 
 - Background: pure white `#FFFFFF`. No paper grain, no gradient, no beige wash.
-- Lines: near-black ink `#111111`–`#000000`. One consistent weight per plate (thicker for simple, medium for medium, slightly thinner for advanced). No taper-to-hairline filigree.
+- Lines: near-black ink `#111111`–`#000000`. One consistent weight per plate (thicker for simple; medium and advanced share the same medium felt-tip). No taper-to-hairline filigree.
 - Interiors: empty white, so a crayon can fill them.
 - The only allowed solid black fills are tiny: pupils, a small nose button, a belt buckle, a button. Never fill hair, skin, clothes, sky, or water.
 

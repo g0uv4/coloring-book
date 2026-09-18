@@ -9,7 +9,7 @@ This case is the calibration memory for group + many props. First-pass QC often 
 ## User request
 
 ```text
-這張厨房照片做高階著色頁。
+這張廚房照片做高階著色頁。
 Advanced coloring page of this kitchen photo.
 ```
 
@@ -104,4 +104,4 @@ Redraw textures as LARGE closed shapes. Vest is one garment outline. Floor is on
 ## Delivery note
 
 `QC SHIP / advanced / group kitchen / four people, named bowls+board+hood as closed shapes`
-Then ask: 這張線稿可以嗎？要輸出成 A4 PDF，還是要再改？
+Then ask: 要輸出成 A4 PDF 嗎？還是繼續修改？

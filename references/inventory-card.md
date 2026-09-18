@@ -26,7 +26,7 @@ Use the user's language.
 
 省略
 - 水印 / 時間戳 / 螢幕 UI
-- 細毛、織紋、木紋
+- 細毛 / 織紋 / 木紋
 ```
 
 If you generate this turn, add one line: `下面是線稿預覽。要輸出 A4 PDF 還是改元件？`

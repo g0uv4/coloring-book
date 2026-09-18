@@ -3,7 +3,7 @@
 ## User request
 
 ```text
-高階細節，把阿媳這張照片變成著色頁。帽子和耳環都要留下。A4 PDF。
+高階細節，把阿嬤這張照片變成著色頁。帽子和耳環都要留下。A4 PDF。
 Advanced intensity. Keep the hat and earrings. A4 PDF.
 ```
 

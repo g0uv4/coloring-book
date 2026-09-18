@@ -58,7 +58,7 @@ Examples of a habit class:
 |---|---|
 | `高階` / `更多元件` (2+ times, not cancelled by `簡單`) | default intensity = advanced |
 | `簡單` / `小孩` 2+ | default intensity = simple |
-| `掉掉雲朵` / `雲少一點` 2+ | extra lock: omit extra clouds |
+| `拿掉雲朵` / `雲少一點` 2+ | extra lock: omit extra clouds |
 | `臉再簡` / `不要追臉` 2+ | extra lock: simpler faces |
 | `銳齒` / `線不要階梯` / `斷線` | extra lock: print-smooth path; rerun cleanup+compose |
 | `不要卡通火` | extra lock: no clip-art fire |
