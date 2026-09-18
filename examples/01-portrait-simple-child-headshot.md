@@ -4,7 +4,7 @@
 
 ```text
 把這張小朋友的照片變成著色頁，簡單一點，給幼兒著。輸出 A4 PDF。
-Use $photo-coloring-book on this photo. Simple intensity. A4 PDF.
+Use $coloring-book on this photo. Simple intensity. A4 PDF.
 ```
 
 ## Photo (described — not bundled)

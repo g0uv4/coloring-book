@@ -4,7 +4,7 @@
 
 ```text
 把這張照片變成著色本，輸出 A4 PDF。用中等細節。
-Use $photo-coloring-book. Medium detail. Printable A4.
+Use $coloring-book. Medium detail. Printable A4.
 ```
 
 ## Photo (described — not bundled)
