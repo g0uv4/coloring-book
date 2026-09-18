@@ -1,63 +1,47 @@
-# Inventory card — show before generate
+# Inventory card — confirm parts before drawing
 
-After the analysis worksheet and **before** calling the image model, show the user a keep / omit table. Wait for them to tick it. Kitchen and other cluttered scenes need this most.
+After the analysis worksheet and **before** `imagine_image_to_image`, show a keep / omit table and **stop**. Do not generate until the user ticks the list (or says 可以依這份畫 / go / generate).
 
-Do not generate in the same turn as the card unless they already said `直接畫` / `skip inventory` / `不用確認清單`.
+Busy kitchens, tables, and travel scenes need this. Headshots may use a short card (5 lines) but still wait.
 
-## What to list
+## What to show
 
-From the worksheet, split facts into two columns. Keep the list short enough to scan on a phone (about 8–16 rows total).
+Use the user's language. Intensity and kind on the first line.
 
 ```text
-強度：{simple|medium|advanced}
-場景：{kind} / {crop}
+強度：{simple|medium|advanced} · 題材：{portrait|group|pet|food|kitchen-object|architecture|scene}
 
-保留
-- {named part}
-- …
+保留（會畫成閉合區塊）
+1. …
+2. …
 
-省略
-- 水印 / 時間戳 / UI
-- {texture that would speckle: knit, wood grain, hair strands}
-- {tiny objects that cannot close}
+省略（不畫；紋理改成大塊）
+- 水印 / 時間戳 / 螢幕 UI
+- 針織網、木紋、草叶
+- 讀不到的標籤字
 
-回「可以畫」或勾選要加／減的元件。
+要改清單、換強度，或回「依這份畫」。
 ```
 
 English fallback:
 
 ```text
-Intensity: {simple|medium|advanced}
-Kind: {kind}
-
-Keep
-- …
-
-Omit
-- watermarks / timestamps / UI
-- …
-
-Reply "draw it" or name parts to add/drop.
+Keep (closed shapes) / Omit (textures → slabs)
+Reply with edits, or say generate.
 ```
 
-## How they answer
+## Rules
 
-| User says | Action |
-|---|---|
-| 可以畫 / 畫吧 / draw it / OK | generate with this card |
-| 加 {X} / 要留 {X} | move X to Keep, then generate (or re-show if the list changed a lot) |
-| 去掉 {Y} / 不要 {Y} | move Y to Omit, then generate |
-| 換強度 | change intensity, re-show the card |
-| 直接畫 / skip inventory | generate now; do not ask again this session unless the photo changes |
+- Keep list = named photo parts that will appear. Cap at ~12 for medium, ~18 for advanced, ~6 for simple.
+- Omit list always includes watermarks, UI, hair strands, fabric weave, wood grain unless they override.
+- If they delete a keep-row, do not draw it.
+- If they add a row that is **not in the photo**, refuse that row (照片裡沒有，不加).
+- Textures they want to keep still become **one closed mass**, not a hatch.
+- After they confirm the card, generate once. Do not re-ask the card unless they change intensity or upload a new photo.
 
-Do not treat `可以畫` as `輸出 PDF`. The card is not the plate.
+## Skip the wait only when
 
-## Intensity effect on the card
+- they already listed keep/omit in the same message as the photo, and
+- the scene is a simple headshot with ≤ 4 facts
 
-- `simple` — Keep is only the largest silhouettes. Extra named objects go to Omit.
-- `medium` — Keep main subjects + a few easy inner facts.
-- `advanced` — Keep every named photo part that can be a closed loop. Still Omit textures and anything that would break.
-
-## After they tick
-
-Copy the final Keep / Omit lines into the prompt inventory. Then generate (workflow step 3).
+Still print the card in one short block so they can correct it after the plate if needed.
