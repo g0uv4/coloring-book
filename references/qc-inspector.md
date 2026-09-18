@@ -124,7 +124,7 @@ These are the additions beyond “lines connected + regions closed”:
 5. **Effect honesty** — exhaust, lamps, water follow the photo, not clip-art.
 6. **Speckle** — dirt, JPEG crumbs, isolated dots fail.
 7. **Even stroke** — mixed hairline + marker blobs fail.
-8. **No contamination** — style-reference subjects never appear.
+8. **No contamination** — extra objects that are not in the photo never appear.
 9. **Print crop** — a closed shape cut by the page edge is an unclosed region.
 
 ## What the inspector must not do
