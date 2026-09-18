@@ -1,0 +1,4 @@
+interface:
+  display_name: Photo Coloring Book
+  short_description: Translate a photo into an Open-Line Plate coloring page (simple / medium / advanced) and compose an A4 PDF.
+  default_prompt: "Use $photo-coloring-book on my uploaded photograph. Translate it into an Open-Line Plate coloring page at medium intensity and return an A4 PDF."

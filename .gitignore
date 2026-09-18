@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+.DS_Store
+.python-version
+*.egg-info/
+.venv/
+venv/
+qc-overlay.png
+qc-report.json
+plate-raw.*
+plate-clean.png
+plate-a4.pdf
+plate-a4.png
