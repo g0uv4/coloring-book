@@ -1,6 +1,6 @@
 # Quality checklist
 
-A plate ships only when the **QC inspector** signs **SHIP**. Full SOP: [qc-inspector.md](qc-inspector.md).
+A plate is shown only when the **QC inspector** signs **SHIP**. An A4 PDF is composed only after the **user confirms**. Full SOP: [qc-inspector.md](qc-inspector.md).
 
 ## Machine (`scripts/qc_plate.py`)
 
@@ -32,8 +32,9 @@ Optional overlay: red = dangling ends, orange = leaks.
 - Intensity matches the request (advanced ≠ denser hatch)
 - Effects match the photo silhouette, not clip-art flames
 
-## PDF
+## PDF (only after the user says yes)
 
+- User confirmed the plate (or requested edits were done and they confirmed again)
 - `DELIVERY PASS`
 - Artwork not cropped
 - Artwork not rotated wrongly

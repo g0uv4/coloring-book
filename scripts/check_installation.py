@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify the photo-coloring-book skill pack is complete."""
+"""Verify the coloring-book skill pack is complete."""
 from __future__ import annotations
 
 import sys

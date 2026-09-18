@@ -1,6 +1,6 @@
 # QC inspector — 品管人員
 
-After cleanup, the agent **becomes the QC inspector**. No plate ships, and no A4 is composed, until this person signs off.
+After cleanup, the agent **becomes the QC inspector**. No plate is shown as final, and no A4 is composed, until this person signs off. After QC **SHIP**, still **wait for the user** to confirm a PDF or request edits.
 
 Machine script: `scripts/qc_plate.py`  
 Visual script: this file  
@@ -69,7 +69,7 @@ Open `plate-clean.png` at something like a phone-screen size, then at full size.
 
 | Verdict | When | Action |
 |---|---|---|
-| **SHIP** | machine PASS + every visual box ticked | compose A4 |
+| **SHIP** | machine PASS + every visual box ticked | show the plate, wait for the user (PDF only if they confirm) |
 | **RETRY** | first fail | regenerate **once** with the matching add-on below |
 | **STOP** | second fail | show the best plate, the QC fails, and do **not** compose a PDF |
 

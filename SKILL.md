@@ -1,17 +1,17 @@
 ---
-name: photo-coloring-book
-description: Convert an uploaded photograph into a print-ready A4 coloring-book page at one of three intensities (simple, medium, advanced). Use when the user uploads a photo and asks for a coloring book, coloring page, 著色本, 著色頁, 線稿, line art for coloring, 簡單/中等/高階細節, or an A4 PDF coloring sheet. Never apply a grayscale or edge-detect filter. Translate the photo into Open-Line Plate illustration, then compose an A4 PDF.
+name: coloring-book
+description: Convert an uploaded photograph into a coloring-book page at simple, medium, or advanced intensity. After QC, show the plate and wait — compose an A4 PDF only when the user confirms. Use when they upload a photo and ask for a coloring book, coloring page, 著色本, 著色頁, 線稿, or line art for coloring. Never grayscale or edge-detect. Never PDF before confirmation.
 license: MIT
 compatibility: Grok, Codex, Claude, any agent with image generation plus a filesystem
 metadata:
-  version: "1.4.0"
-  short-description: Photo to Open-Line Plate A4 coloring PDF (simple / medium / advanced)
+  version: "1.5.0"
+  short-description: Photo to Open-Line Plate coloring page; A4 PDF only after user confirms
   author: Inkplate
 ---
 
-# Photo Coloring Book (Open-Line Plate)
+# Coloring Book (Open-Line Plate)
 
-Turn one user-uploaded photograph into a **printable coloring page**, then place it on an **A4 PDF**.
+Turn one user-uploaded photograph into a **printable coloring page**. Compose an **A4 PDF only after the user looks at the plate and agrees**.
 
 This is a **translation**, not a filter. Do not desaturate, posterize, Sobel, Canny, or "find edges" on the photo. Rebuild the scene as a coloring-book illustration with one locked style called **Open-Line Plate**, at one of three intensities: **simple**, **medium** (default), **advanced**.
 
@@ -47,7 +47,7 @@ Read [references/intensity.md](references/intensity.md). Pick **one**:
 | `medium` | default, or 中等 / 家庭 | main subjects + a few easy inner facts (ages ~8–14) |
 | `advanced` | 高階 / 進階 / 更多細節 / 更多元件 | **more named parts from the photo**, same line weight as medium. Never thinner, never denser hatch. Skip any part you cannot close as a loop. |
 
-If they ask for all three, run the pipeline three times on the same photo and deliver three labeled pages.
+If they ask for all three, run the pipeline three times on the same photo and **preview all three plates** before asking which (or all) should become PDFs.
 
 ## Input lock
 
@@ -56,7 +56,7 @@ If they ask for all three, run the pipeline three times on the same photo and de
 - `PLATE` = the generated coloring page (temporary).
 - `CLEAN_PLATE` = `PLATE` after `scripts/cleanup_lines.py`.
 - `QC_REPORT` = JSON from `scripts/qc_plate.py`.
-- `PDF` = A4 deliverable from `scripts/compose_a4_pdf.py`.
+- `PDF` = A4 deliverable from `scripts/compose_a4_pdf.py`. Only after the user confirms.
 
 There are **no bundled style images**. Open-Line Plate is defined in text (`references/style-guide.md`). If the user attached coloring-book examples, they are **mood only**: do not copy them, do not feed them as IMAGE 1, do not add them to this repo.
 
@@ -64,8 +64,8 @@ There are **no bundled style images**. Open-Line Plate is defined in text (`refe
 
 1. Confirm an image-generation edit tool is callable (`imagine_image_to_image`, or an images-edits API with the user photo). If none exist, stop and say so. Do **not** fake the plate with Pillow, OpenCV, Canny, or CSS filters.
 2. Use Python scripts only for cleanup, **QC**, and A4 composition — never to draw the picture.
-3. Return the plate to the user only after **QC SHIP**. Return the PDF only after `DELIVERY PASS`.
-4. If generation, cleanup, QC, or composition fails, name the failed stage and return no final PDF.
+3. Show the plate only after **QC SHIP**. **Do not compose a PDF until the user confirms** in a later message.
+4. If generation, cleanup, or QC fails, name the failed stage and return no PDF.
 
 ## Workflow
 
@@ -117,7 +117,7 @@ python3 scripts/cleanup_lines.py plate-raw.png plate-clean.png --threshold 128
 
 ### 5. QC inspector (品管人員)
 
-Read [references/qc-inspector.md](references/qc-inspector.md) and **become that person**. Do not compose a PDF until they sign off.
+Read [references/qc-inspector.md](references/qc-inspector.md) and **become that person**. Do not compose a PDF until QC signs off **and** the user confirms.
 
 ```bash
 python3 scripts/qc_plate.py plate-clean.png \
@@ -133,11 +133,32 @@ Then **look at** `plate-clean.png` and, if it exists, `qc-overlay.png`.
 
 Verdict:
 
-- **SHIP** → go to step 6
+- **SHIP** → go to step 6 (preview). Do **not** compose a PDF yet.
 - **RETRY** (first fail) → regenerate once with the matching add-on in `qc-inspector.md`
 - **STOP** (second fail) → show the best plate + QC fails, no PDF
 
-### 6. Compose A4 PDF
+### 6. Preview — wait for the user
+
+Show the **clean plate image**. One short note: intensity used and what was simplified. Do not show the raw pre-cleanup image unless they ask.
+
+Then **ask and stop**. Do not run `compose_a4_pdf.py` in this turn, even if the original request mentioned PDF.
+
+Ask in the user's language, for example:
+
+- 這張線稿可以嗎？要輸出成 A4 PDF，還是要再改（強度、元件、臉、衣服、背景）？
+- Keep this plate and make an A4 PDF, or keep editing?
+
+On the next message:
+
+| User says | Action |
+|---|---|
+| 可以 / 輸出 / PDF / 列印 / OK / yes / ship | step 7 |
+| 再改、加／減元件、換強度、臉不對… | back to step 3 with those notes, then QC, then step 6 again |
+| 取消 | stop, no PDF |
+
+Keep the last `plate-clean.png` path so PDF composition does not need a new generation.
+
+### 7. Compose A4 PDF
 
 Read [references/pdf-spec.md](references/pdf-spec.md).
 
@@ -149,17 +170,11 @@ python3 scripts/compose_a4_pdf.py plate-clean.png plate-a4.pdf \
 
 Add `--title "..."` only when the user asked for a title. Default is a clean sheet with no header/footer chrome on the artwork.
 
-If Python is unavailable, generate the plate at 3:4 (or 4:3), then use any PDF tool that can place a PNG on an A4 page with ~14 mm margins. Last resort: return the PNG and tell the user to print "fit to A4, no crop".
+If Python is unavailable, use any PDF tool that can place the PNG on an A4 page with ~14 mm margins. Last resort: return the PNG and tell the user to print "fit to A4, no crop".
 
-### 7. Deliver
+### 8. Deliver PDF
 
-Show, in this order:
-
-1. The clean plate image
-2. The A4 PDF (downloadable)
-3. One short note: intensity used, what was simplified, and `QC SHIP`
-
-Do not show the raw pre-cleanup image unless they ask.
+Show the A4 PDF (downloadable) and `DELIVERY PASS`. Do not regenerate unless they ask.
 
 ## Safety and rights
 
@@ -171,7 +186,7 @@ Do not show the raw pre-cleanup image unless they ask.
 
 ## Multiple photos
 
-One photo = one A4 page. Several photos = one PDF with one page per photo, same intensity, same margins. Compose each page with `compose_a4_pdf.py`, then merge if a PDF merger is available; otherwise deliver separate PDFs.
+One photo = one page. Several photos = one plate each, same intensity. Confirm **each** plate (or the set) before composing PDFs. Compose each agreed page with `compose_a4_pdf.py`, then merge if a PDF merger is available; otherwise deliver separate PDFs.
 
 ## Resources (load on demand)
 
