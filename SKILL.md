@@ -198,3 +198,5 @@ One photo = one page. Several photos = one plate each, same intensity. Confirm *
 - [references/pdf-spec.md](references/pdf-spec.md) — A4 geometry
 - [references/qc-inspector.md](references/qc-inspector.md) — 品管人員 (closed lines + extra gates)
 - [references/quality-checklist.md](references/quality-checklist.md) — pass/fail summary
+- [references/examples-index.md](references/examples-index.md) — worked examples
+
