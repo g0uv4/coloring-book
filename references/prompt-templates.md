@@ -4,41 +4,9 @@ Image models follow the first concrete visual orders hardest. Put the lock first
 
 Always insert **exactly one** intensity block: `simple`, `medium`, or `advanced`. Default `medium`.
 
-## Master prompt (reference-to-image)
+Edit **only the user photograph**. Never attach third-party coloring pages as style images.
 
-Use when IMAGE 0 is the user photo and IMAGE 1 is a bundled style plate.
-
-```
-Translate IMAGE 0 into a printable coloring-book page that uses only the line language of IMAGE 1.
-
-IMAGE 0 is content evidence. Keep its people, animals, count, pose, crop, clothing identity, and distinctive props. Do not copy extra objects from IMAGE 1.
-
-IMAGE 1 is style evidence only: black ink outlines, pure white interiors, closed crayon-ready shapes.
-
-{INTENSITY_BLOCK}
-
-Shared Open-Line Plate rules:
-- Pure white background
-- Black outlines only, one consistent MEDIUM-THICK felt-tip weight (not hairline)
-- Every region is a CLOSED loop a crayon can fill. No broken, dashed, or fading lines
-- If a detail is too small to close as a complete shape, omit it
-- Cartoon-illustration of the real subjects, not a photoreal tracing and not a grayscale photo
-- Faces: oval eyes with a round pupil, simple brows, small U-nose, simple smile, no eyelashes, no wrinkles, no pores
-- Hair as closed clumps, never individual strands, never filled solid black
-- Hands simplified to cartoon fingers
-- Effects (fire, smoke, water, exhaust) follow the PHOTO silhouette — not clip-art flames or sparkles
-- No shading, no gray fills, no hatching, no stipple, no watercolor, no paper texture
-- No watermark, no logo, no caption, no frame
-- Do not add people, animals, or landmarks that are not in IMAGE 0
-- Tiny trademarks become a simple geometric badge or are omitted
-
-Inventory from IMAGE 0:
-{INVENTORY}
-```
-
-## Master prompt (image-to-image, no style file)
-
-Same lock, without IMAGE 1:
+## Master prompt (image-to-image)
 
 ```
 Redraw this photograph as a printable coloring-book page.
@@ -60,6 +28,7 @@ Shared Open-Line Plate rules:
 - No shading, no gray fills, no hatching, no stipple, no watercolor, no paper texture
 - No watermark, no logo, no caption, no frame
 - Do not add people, animals, or landmarks that are not in the photograph
+- Tiny trademarks become a simple geometric badge or are omitted
 
 Inventory:
 {INVENTORY}
@@ -156,5 +125,5 @@ Match the photograph’s silhouette of fire, smoke, water, or exhaust. No clip-a
 
 ## Aspect ratio
 
-- Source taller or square → `3:4` (fits portrait A4)
-- Source clearly wide → `4:3` (fits landscape A4)
+- Source taller or square → `2:3` (fits portrait A4)
+- Source clearly wide → `3:2` (fits landscape A4)

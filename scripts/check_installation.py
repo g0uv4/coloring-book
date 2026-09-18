@@ -15,15 +15,10 @@ REQUIRED_FILES = [
     "references/intensity.md",
     "references/qc-inspector.md",
     "references/quality-checklist.md",
-    "references/style-reference-index.md",
     "scripts/cleanup_lines.py",
     "scripts/compose_a4_pdf.py",
     "scripts/qc_plate.py",
     "scripts/validate_coloring.py",
-    "assets/style-references/01-portrait.png",
-    "assets/style-references/02-scene.png",
-    "assets/style-references/03-pet.png",
-    "assets/style-references/04-objects.png",
 ]
 
 

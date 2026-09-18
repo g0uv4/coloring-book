@@ -2,43 +2,39 @@
 
 A portable `SKILL.md` pack. Upload a photograph to Grok (or any agent that can load this skill) and get a **print-ready A4 coloring page PDF** in the locked **Open-Line Plate** style.
 
+This is a **skill**, not a website. Do not deploy it as an app.
+
 This is not a grayscale filter. The agent rebuilds the photo as a coloring-book illustration: black outlines, empty white regions, simplified faces. Intensity is **simple**, **medium** (default), or **advanced** — advanced keeps more *named parts from the photo*, not denser hatch.
+
+Style is locked in text. **No third-party coloring pages are bundled.** Mood examples stay in chat; they are not repo assets.
 
 Public repo: [github.com/g0uv4/photo-coloring-book](https://github.com/g0uv4/photo-coloring-book)
 
 ## Install
 
 ```bash
-git clone https://github.com/g0uv4/photo-coloring-book.git
+git clone https://github.com/g0uv4/photo-coloring-book.git ~/.grok/skills/photo-coloring-book
 ```
 
-Copy the cloned folder into a skills path, then start a new agent session.
-
-**Grok Build / Super Grok**
-
-```bash
-cp -R photo-coloring-book ~/.grok/skills/photo-coloring-book
-# or, project-local:
-cp -R photo-coloring-book .grok/skills/photo-coloring-book
-```
+Then start a new agent session.
 
 **Codex**
 
 ```bash
-cp -R photo-coloring-book ~/.codex/skills/photo-coloring-book
+git clone https://github.com/g0uv4/photo-coloring-book.git ~/.codex/skills/photo-coloring-book
 ```
 
 **Claude Code**
 
 ```bash
-cp -R photo-coloring-book ~/.claude/skills/photo-coloring-book
+git clone https://github.com/g0uv4/photo-coloring-book.git ~/.claude/skills/photo-coloring-book
 ```
 
 Needs Python 3 + Pillow + numpy for cleanup / QC / A4 composition:
 
 ```bash
-python3 -m pip install -r photo-coloring-book/requirements.txt
-python3 photo-coloring-book/scripts/check_installation.py photo-coloring-book
+python3 -m pip install -r ~/.grok/skills/photo-coloring-book/requirements.txt
+python3 ~/.grok/skills/photo-coloring-book/scripts/check_installation.py ~/.grok/skills/photo-coloring-book
 ```
 
 ## Example prompts
@@ -53,10 +49,6 @@ Use $photo-coloring-book on this photo. Turn it into a coloring page and give me
 
 ```text
 同一張照片做簡單、中等、高階三張著色頁，各一頁 A4。
-```
-
-```text
-Make a 3-page coloring book from these photos, advanced intensity, one A4 page each.
 ```
 
 ## Intensity
@@ -100,9 +92,8 @@ photo-coloring-book/
 ├── LICENSE
 ├── requirements.txt
 ├── agents/openai.yaml
-├── assets/style-references/   4 original line plates (style only)
-├── references/                law, intensity, QC inspector, prompts, A4 spec
-└── scripts/                   cleanup, qc_plate, validate, A4 PDF
+├── references/     law, intensity, QC inspector, prompts, A4 spec
+└── scripts/        cleanup, qc_plate, validate, A4 PDF
 ```
 
 ## License

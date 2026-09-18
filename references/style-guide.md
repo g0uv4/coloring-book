@@ -54,4 +54,4 @@ Before delivery, imagine handing the page to someone with a 12-color crayon box 
 
 ## Reference role
 
-Bundled PNGs teach **line weight, closed shapes, and empty interiors**. They do not teach subject matter. Never copy the two waving children, the beach sign, the cat, or the summer objects onto a user's photo.
+Style is **text-only**. This pack ships **no** coloring plates. Do not download, bundle, or feed third-party coloring pages into the image model. If the user attached examples, they taught the *author* of this skill; they are not assets and not IMAGE 1.

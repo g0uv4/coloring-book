@@ -4,7 +4,7 @@ description: Convert an uploaded photograph into a print-ready A4 coloring-book 
 license: MIT
 compatibility: Grok, Codex, Claude, any agent with image generation plus a filesystem
 metadata:
-  version: "1.3.0"
+  version: "1.4.0"
   short-description: Photo to Open-Line Plate A4 coloring PDF (simple / medium / advanced)
   author: Inkplate
 ---
@@ -14,6 +14,8 @@ metadata:
 Turn one user-uploaded photograph into a **printable coloring page**, then place it on an **A4 PDF**.
 
 This is a **translation**, not a filter. Do not desaturate, posterize, Sobel, Canny, or "find edges" on the photo. Rebuild the scene as a coloring-book illustration with one locked style called **Open-Line Plate**, at one of three intensities: **simple**, **medium** (default), **advanced**.
+
+This pack is a **skill**, not a website. Do not scaffold or deploy a web app for it.
 
 If no photograph is attached, ask for one and stop.
 
@@ -49,17 +51,18 @@ If they ask for all three, run the pipeline three times on the same photo and de
 
 ## Input lock
 
-- `USER_PHOTO` = the photograph uploaded in **this** request. Record its exact local path. Never substitute a bundled reference, a previous result, or a screenshot.
-- `STYLE_REFS` = files in `assets/style-references/`. Style only. Never place a style ref in the output.
+- `USER_PHOTO` = the photograph uploaded in **this** request. Record its exact local path. Never substitute a previous result or a screenshot.
 - `INTENSITY` = `simple` | `medium` | `advanced`
 - `PLATE` = the generated coloring page (temporary).
 - `CLEAN_PLATE` = `PLATE` after `scripts/cleanup_lines.py`.
 - `QC_REPORT` = JSON from `scripts/qc_plate.py`.
 - `PDF` = A4 deliverable from `scripts/compose_a4_pdf.py`.
 
+There are **no bundled style images**. Open-Line Plate is defined in text (`references/style-guide.md`). If the user attached coloring-book examples, they are **mood only**: do not copy them, do not feed them as IMAGE 1, do not add them to this repo.
+
 ## Tool contract
 
-1. Confirm an image-generation edit tool is callable (`imagine_image_to_image` / `imagine_reference_to_image`, or an images-edits API). If none exist, stop and say so. Do **not** fake the plate with Pillow, OpenCV, Canny, or CSS filters.
+1. Confirm an image-generation edit tool is callable (`imagine_image_to_image`, or an images-edits API with the user photo). If none exist, stop and say so. Do **not** fake the plate with Pillow, OpenCV, Canny, or CSS filters.
 2. Use Python scripts only for cleanup, **QC**, and A4 composition — never to draw the picture.
 3. Return the plate to the user only after **QC SHIP**. Return the PDF only after `DELIVERY PASS`.
 4. If generation, cleanup, QC, or composition fails, name the failed stage and return no final PDF.
@@ -94,44 +97,25 @@ Read [references/portrait-rules.md](references/portrait-rules.md) whenever a fac
 
 Use the table above. If unspecified, `medium`.
 
-### 3. Pick 1 style reference
+### 3. Generate the plate
 
-Use [references/style-reference-index.md](references/style-reference-index.md).
+Build the prompt from [references/prompt-templates.md](references/prompt-templates.md). Fill the inventory block with facts from step 2. Insert the **intensity block** for `simple`, `medium`, or `advanced`. Keep the locked style block verbatim.
 
-| kind | file |
-|---|---|
-| portrait / group | `assets/style-references/01-portrait.png` |
-| scene / landscape | `assets/style-references/02-scene.png` |
-| pet | `assets/style-references/03-pet.png` |
-| object / still life | `assets/style-references/04-objects.png` |
+**Required:** `imagine_image_to_image` on `USER_PHOTO` only (or `POST /v1/images/edits` with that single photo). Model `grok-imagine-image-2.0` or `grok-imagine-image-quality`.
 
-Inspect the chosen file so you can describe its line weight. Do not copy its subject matter.
-
-### 4. Generate the plate
-
-Build the prompt from [references/prompt-templates.md](references/prompt-templates.md). Fill the inventory block with facts from step 2. Insert the **intensity block** for `simple`, `medium`, or `advanced`. Keep the shared lock verbatim.
-
-**Preferred (2+ images):** `imagine_reference_to_image`
-
-- `image_paths`: `[USER_PHOTO, STYLE_REF]`
-- Tell the model IMAGE 0 is content evidence, IMAGE 1 is line-language only
-- `aspect_ratio`: `3:4` for portrait/square sources, `4:3` for landscape sources
-
-**Fallback (1 image):** `imagine_image_to_image` on `USER_PHOTO` with the same prompt (style described in text).
-
-**Chat / API fallback:** `POST /v1/images/edits` with the user photo (and the style ref when the API allows multiple images). Model `grok-imagine-image-2.0` or `grok-imagine-image-quality`.
-
-Do not generate from text alone when the user uploaded a photo — identity will drift.
+- `aspect_ratio`: `2:3` for portrait/square sources, `3:2` for landscape sources
+- Do **not** pass third-party coloring pages, bundled samples, or previous outputs as style images
+- Do not generate from text alone when the user uploaded a photo — identity will drift
 
 Copy the returned sandbox path to the run folder as `plate-raw.png` (keep the original too).
 
-### 5. Cleanup
+### 4. Cleanup
 
 ```bash
 python3 scripts/cleanup_lines.py plate-raw.png plate-clean.png --threshold 128
 ```
 
-### 5b. QC inspector (品管人員)
+### 5. QC inspector (品管人員)
 
 Read [references/qc-inspector.md](references/qc-inspector.md) and **become that person**. Do not compose a PDF until they sign off.
 
@@ -175,7 +159,7 @@ Show, in this order:
 2. The A4 PDF (downloadable)
 3. One short note: intensity used, what was simplified, and `QC SHIP`
 
-Do not show the raw pre-cleanup image unless they ask. Do not show style references as if they were the result.
+Do not show the raw pre-cleanup image unless they ask.
 
 ## Safety and rights
 
@@ -183,6 +167,7 @@ Do not show the raw pre-cleanup image unless they ask. Do not show style referen
 - Refuse sexualized, violent-gore, or exploitative requests. Do not "draw someone nude as a coloring page".
 - Do not reproduce trademarked character model sheets. If the photo is a person in a costume, stylize **that photo**; do not swap in official character art.
 - Do not copy watermarks, stock-site IDs, or UI chrome from the source.
+- Do not ship, bundle, or regenerate other people's coloring pages. Mood examples stay in the chat.
 
 ## Multiple photos
 
@@ -198,4 +183,3 @@ One photo = one A4 page. Several photos = one PDF with one page per photo, same 
 - [references/pdf-spec.md](references/pdf-spec.md) — A4 geometry
 - [references/qc-inspector.md](references/qc-inspector.md) — 品管人員 (closed lines + extra gates)
 - [references/quality-checklist.md](references/quality-checklist.md) — pass/fail summary
-- [references/style-reference-index.md](references/style-reference-index.md) — which PNG to feed

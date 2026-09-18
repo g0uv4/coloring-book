@@ -49,7 +49,7 @@ Open `plate-clean.png` at something like a phone-screen size, then at full size.
 
 - [ ] Count of people / animals matches the inventory
 - [ ] Pose, crop, glasses, haircut, distinctive props still read
-- [ ] No extra people, pets, or landmarks stolen from the style reference
+- [ ] No extra people, pets, or landmarks that are not in the photo
 - [ ] No watermark, timestamp, or garbage letters
 
 ### B4. Intensity and effects
