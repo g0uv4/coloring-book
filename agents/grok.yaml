@@ -1,0 +1,6 @@
+interface:
+  display_name: Coloring Book
+  short_description: Translate a photo into an Open-Line Plate. Grok uses Imagine (imagine_image_to_image). Preview first; A4 vector PDF only after confirm.
+  default_prompt: "Use $coloring-book on my uploaded photograph. Translate it into an Open-Line Plate at medium intensity with Imagine image-to-image, show the plate, and wait for PDF or edits."
+  image_backend: imagine_image_to_image
+  image_model: grok-imagine

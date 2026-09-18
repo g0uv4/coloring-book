@@ -1,0 +1,6 @@
+interface:
+  display_name: Coloring Book
+  short_description: Translate a photo into an Open-Line Plate. Antigravity uses Nano Banana (Pro if available). Preview first; A4 vector PDF only after confirm.
+  default_prompt: "Use $coloring-book on my uploaded photograph. Translate it into an Open-Line Plate at medium intensity with Nano Banana Pro image-to-image if available (else Nano Banana), show the plate, and wait for PDF or edits."
+  image_backend: nano-banana
+  image_model: gemini-3-pro-image

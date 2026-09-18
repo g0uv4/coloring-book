@@ -1,4 +1,6 @@
 interface:
   display_name: Coloring Book
-  short_description: Translate a photo into an Open-Line Plate coloring page (simple / medium / advanced). Show it first; compose an A4 PDF only after the user confirms.
-  default_prompt: "Use $coloring-book on my uploaded photograph. Translate it into an Open-Line Plate coloring page at medium intensity, show me the plate, and wait for me to confirm a PDF or request edits."
+  short_description: Translate a photo into an Open-Line Plate. OpenAI harness uses ChatGPT Images (image_gen / gpt-image-2). Preview first; A4 vector PDF only after confirm.
+  default_prompt: "Use $coloring-book on my uploaded photograph. Translate it into an Open-Line Plate at medium intensity with ChatGPT Images (image_gen) on the photo, show the plate, and wait for PDF or edits."
+  image_backend: image_gen
+  image_model: gpt-image-2
