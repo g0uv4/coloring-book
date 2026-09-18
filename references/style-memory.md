@@ -1,84 +1,75 @@
-# Style memory — persist what this user likes
+# Style memory — two layers
 
-Open-Line Plate is the locked house style. **User memory** stores *their* defaults on top of it (intensity, extra omit rules, language). Never store the photograph, faces of people in the photo, or third-party coloring pages.
+Open-Line Plate is the house style. User memory stores defaults on top of it. Never store the photograph, faces, or third-party coloring pages.
 
-Persist with **`$memory-with-docs`** (slash `/memory-with-docs`). That skill writes documented facts into **this user's** Grok memory. Do not invent a local JSON cache and do not edit the skill pack to “save” a taste.
+## Writer
+
+1. Prefer `$memory-with-docs` (`/memory-with-docs`) if installed.
+2. Otherwise `memory-edit` / Grok user memory.
+3. Do not invent a local JSON cache.
 
 ## When to read
 
-At intensity pick (workflow 2b), recall Grok memory for `$coloring-book`.
+At intensity pick (workflow 2b), recall `$coloring-book`.
 
-| If memory has… | Do |
+| If memory has | Do |
 |---|---|
-| a `$coloring-book` profile | use it as **defaults** |
-| nothing | skill defaults (`medium`, Open-Line Plate law) |
+| a `$coloring-book` profile | use as defaults |
+| nothing | skill defaults (`medium`) |
 | this-turn words that conflict | **this turn wins** |
 
-Tell the user in one clause when a remembered default is applied, e.g. `套用你記住的高階預設`.
+Say `套用你記住的高階預設` when a remembered default is applied.
 
-## When to write
+## Layer A — standing locks (long-lived)
 
-Only after a **durable** signal — not after the first generate.
+Always persist unless they cancel them:
 
-Write when **any** of these happen:
+- closed continuous lines, white interiors
+- no cartoon clip-art fire
+- textures (knit, wood, brick) as large closed slabs
+- preview plate, PDF only after confirm
 
-- they confirm the plate (`可以` / `輸出 PDF` / `喜歡這張` / `記住這個風格`)
-- they give a standing rule (`以後都用高階`, `臉再簡一點當預設`)
-- they correct a remembered default (`不要再用高階當預設`)
+Refresh locks when they give a standing rule (`以後都不要卡通火`, `織紋當大塊`).
 
-Do **not** write:
+## Layer B — default intensity (explicit only)
 
-- a one-off (`這張給小孩，簡單就好`) unless they say 以後
-- who is in the photo
-- file paths, overlay JSON, QC numbers
-- other people's coloring pages
+Change default intensity only when they say:
 
-Replace the previous `$coloring-book` profile. Do not stack five versions.
+- `記住這個風格` / `remember this style`
+- `以後都這樣` / `以後都用高階` / `以後都用中等` / `以後都用簡單`
+- `不要再用X當預設`
 
-## Payload for `/memory-with-docs`
+If they said `記住` without naming intensity, use the intensity of the plate just approved.
 
-Invoke `$memory-with-docs` with this exact shape. Fill `{…}` from the confirmed run. Keep it one profile, not a diary.
+Do **not** write default intensity when they only say `可以` / `輸出 PDF` / `PDF` / `列印` / `OK` / `yes` / `ship`, or a one-off without `以後`.
+
+## Delete
+
+`忘記著色本設定` / `forget coloring-book style` → delete the coloring-book profile only.
+
+Never store who is in the photo, file paths, QC numbers, or other people's plates. Replace the previous profile.
+
+## Payload
 
 ```text
-/memory-with-docs
-
-Replace the user's coloring-book style profile. This is a standing Super Grok preference, not a one-off.
+Replace the user's coloring-book style profile. Standing Super Grok preference.
 
 Title: coloring-book style profile
 Section: Preferences
 Source: $coloring-book skill, confirmed {YYYY-MM-DD}
 
-Write (replace any older coloring-book / Open-Line Plate preference):
-
 - Uses Super Grok skill `$coloring-book` (repo github.com/g0uv4/coloring-book).
-- House style: Open-Line Plate — medium-thick closed black outlines, pure white interiors, cartoon of the real photo, never grayscale or edge-detect.
+- House style: Open-Line Plate — medium-thick closed black outlines, white interiors, cartoon of the real photo, never grayscale or edge-detect.
 - Default intensity when unspecified: {simple|medium|advanced}.
 - Advanced means more named parts from the photo, never denser or thinner lines; omit any line that would break.
-- Extra standing locks: {e.g. no cartoon flames; vest/floor as large closed shapes not texture; preview plate then PDF only after confirm}.
+- Extra standing locks: {no cartoon flames; vest/floor as large closed shapes; preview then PDF only after confirm}.
 - Language for prompts to the user: {zh-TW|en}.
 - Last confirmed: {kind} photo, intensity {…}, {YYYY-MM-DD}.
 ```
 
-If they only confirmed a plate and did not state a new default intensity, set **Default intensity** to the intensity of that confirmed plate.
+Prefix with `/memory-with-docs` when that skill exists. Otherwise use `memory-edit`.
 
-If they said `忘記著色本設定` / `forget coloring-book style`, call `$memory-with-docs` to **delete** the coloring-book profile only.
+## After a write
 
-## What “style” is allowed to mean
-
-Remember these knobs, nothing else:
-
-| Knob | Example |
-|---|---|
-| default intensity | advanced |
-| extra omit rules | no knit texture, no wood grain, no clip-art fire |
-| face tightness | even simpler than the portrait recipe |
-| confirm-before-PDF | always wait |
-| UI language | 繁體中文 |
-
-Do not remember a favorite *subject* (always kitchens, always selfies) unless they explicitly say so.
-
-## After a successful write
-
-One short line to the user, then continue (PDF if they also asked for it):
-
-`已用 /memory-with-docs 記住：預設 {intensity}，{one extra lock}。`
+`已記住著色本設定：預設 {intensity}，{one extra lock}。`
+Then PDF only if they also asked for it.
