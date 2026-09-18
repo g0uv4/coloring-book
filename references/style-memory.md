@@ -1,37 +1,41 @@
-# Style memory — two layers
+# Style memory — coordinator writes, user never invokes it
 
 Open-Line Plate is the house style. User memory stores defaults on top of it. Never store the photograph, faces, or third-party coloring pages.
 
-## Writer
+## Who writes
 
-1. Prefer `$memory-with-docs` (`/memory-with-docs`) if installed.
-2. Otherwise `memory-edit` / Grok user memory.
+The **coloring-book coordinator** (this skill) writes memory. The user must **never** be told to type `/memory-with-docs`, `$memory-with-docs`, or `memory-edit`.
+
+Internally:
+
+1. Use `$memory-with-docs` if that skill exists.
+2. Else use `memory-edit` / Grok user memory.
 3. Do not invent a local JSON cache.
+
+After a successful write, one short user-facing line with **no tool name**:
+
+`已記住你的著色本設定。`
+
+or, if intensity changed:
+
+`已記住：以後預設 {simple|中等|高階}。`
 
 ## When to read
 
-At intensity pick (workflow 2b), recall `$coloring-book`.
+At intensity pick (workflow 2b), recall `$coloring-book` silently. One clause if a default is applied: `套用你記住的高階預設`.
 
-| If memory has | Do |
-|---|---|
-| a `$coloring-book` profile | use as defaults |
-| nothing | skill defaults (`medium`) |
-| this-turn words that conflict | **this turn wins** |
+## Layer A — standing locks (coordinator may write without asking)
 
-Say `套用你記住的高階預設` when a remembered default is applied.
-
-## Layer A — standing locks (long-lived)
-
-Always persist unless they cancel them:
+If no coloring-book profile exists after the first QC SHIP, the coordinator writes house locks only (not a new default intensity):
 
 - closed continuous lines, white interiors
 - no cartoon clip-art fire
-- textures (knit, wood, brick) as large closed slabs
+- textures as large closed slabs
 - preview plate, PDF only after confirm
 
-Refresh locks when they give a standing rule (`以後都不要卡通火`, `織紋當大塊`).
+Refresh locks when they give a standing rule (`以後都不要卡通火`).
 
-## Layer B — default intensity (explicit only)
+## Layer B — default intensity (explicit words only)
 
 Change default intensity only when they say:
 
@@ -39,21 +43,16 @@ Change default intensity only when they say:
 - `以後都這樣` / `以後都用高階` / `以後都用中等` / `以後都用簡單`
 - `不要再用X當預設`
 
-If they said `記住` without naming intensity, use the intensity of the plate just approved.
-
-Do **not** write default intensity when they only say `可以` / `輸出 PDF` / `PDF` / `列印` / `OK` / `yes` / `ship`, or a one-off without `以後`.
+Do **not** write default intensity on `輸出 PDF` / `可以` / `OK`.
 
 ## Delete
 
-`忘記著色本設定` / `forget coloring-book style` → delete the coloring-book profile only.
+`忘記著色本設定` → coordinator deletes the coloring-book profile only. Do not ask them to run a slash command.
 
-Never store who is in the photo, file paths, QC numbers, or other people's plates. Replace the previous profile.
-
-## Payload
+## Payload (internal — do not show this block to the user)
 
 ```text
-Replace the user's coloring-book style profile. Standing Super Grok preference.
-
+Replace the user's coloring-book style profile.
 Title: coloring-book style profile
 Section: Preferences
 Source: $coloring-book skill, confirmed {YYYY-MM-DD}
@@ -61,15 +60,8 @@ Source: $coloring-book skill, confirmed {YYYY-MM-DD}
 - Uses Super Grok skill `$coloring-book` (repo github.com/g0uv4/coloring-book).
 - House style: Open-Line Plate — medium-thick closed black outlines, white interiors, cartoon of the real photo, never grayscale or edge-detect.
 - Default intensity when unspecified: {simple|medium|advanced}.
-- Advanced means more named parts from the photo, never denser or thinner lines; omit any line that would break.
-- Extra standing locks: {no cartoon flames; vest/floor as large closed shapes; preview then PDF only after confirm}.
+- Advanced means more named parts from the photo, never denser or thinner lines.
+- Extra standing locks: {no cartoon flames; textures as slabs; preview then PDF}.
 - Language for prompts to the user: {zh-TW|en}.
 - Last confirmed: {kind} photo, intensity {…}, {YYYY-MM-DD}.
 ```
-
-Prefix with `/memory-with-docs` when that skill exists. Otherwise use `memory-edit`.
-
-## After a write
-
-`已記住著色本設定：預設 {intensity}，{one extra lock}。`
-Then PDF only if they also asked for it.
