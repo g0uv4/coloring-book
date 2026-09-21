@@ -1,11 +1,11 @@
 ---
 name: coloring-book
-description: Convert an uploaded photograph into a coloring-book page. For a pet or portrait, draw in the same turn and embed the PNG in chat. A4 PDF only after the user confirms. Use when they upload a photo and ask for a coloring book, coloring page, 著色本, 著色頁, 線稿, or line art for coloring. Never fill interiors black. Never PDF before confirmation.
+description: Convert an uploaded photograph into a coloring-book page. For a pet or portrait, draw in the same turn and embed the PNG in chat. Large empty fields (sky, sea, road) may take an optional pattern fill after preview. A4 PDF only after the user confirms. Use when they upload a photo and ask for a coloring book, coloring page, 著色本, 著色頁, 線稿, or line art for coloring. Never fill interiors black. Never PDF before confirmation.
 license: MIT
 compatibility: Grok, Codex, ChatGPT, Claude Code, Antigravity, Gemini CLI, Kimi, Cursor, any agent with an image tool plus a filesystem
 metadata:
-  version: "1.9.5"
-  short-description: Photo to Open-Line Plate; embed PNG in chat; vector A4 PDF after confirm
+  version: "1.9.6"
+  short-description: Photo to Open-Line Plate; optional pattern fills; preview PNG; vector A4 PDF after confirm
   author: g0uv4
 ---
 
@@ -23,6 +23,7 @@ Not a website. Not a multi-photo book. Never tell the user to type `/memory-with
 2. After QC, **embed `plate-clean.png` as an image in the chat**. A path, a PDF, or a list is not a preview. See [references/preview-in-chat.md](references/preview-in-chat.md).
 3. Preview turn: do **not** run `vectorize_plate.py`, `compose_a4_pdf.py`, or `pipeline.py --pdf`. Do not say 「走管線」.
 4. Dark fur / hair / clothes stay **white pockets** with outlines. A filled poster is QC FAIL. Retry once. Never hide it in a PDF.
+5. Pattern fills are **opt-in** on named large fields only (sky / sea / road / wall / floor). See [references/pattern-fills.md](references/pattern-fills.md). Never auto-pattern faces.
 
 ## Speed
 
@@ -67,6 +68,8 @@ Memory: [references/style-memory.md](references/style-memory.md) — recall sile
 | User said 先畫 / 給我看 / 直接畫 | Generate this turn |
 | Kitchen / group / clutter | Show the card and wait for `依這份畫` |
 
+If they already named a pattern in the same message as the photo (`天空用菱格紋`), keep the first plate empty in that field, then apply the pattern as a local redraw after QC — or bake it in if the region is obvious.
+
 ### 3. Generate — this host's image tool
 
 [references/image-backend.md](references/image-backend.md) and [references/prompt-templates.md](references/prompt-templates.md).
@@ -101,18 +104,19 @@ Overlay only on FAIL. Fill / too-dark / not-enough-white → retry with the dark
 
 [references/preview-in-chat.md](references/preview-in-chat.md) and [references/element-list.md](references/element-list.md).
 
-Embed `plate-clean.png`. List 圖片元素. Ask `要輸出成 A4 PDF 嗎？還是繼續修改？` Stop.
+Embed `plate-clean.png`. List 圖片元素. If sky / sea / road / wall / floor is on the plate, offer pattern fills ([pattern-fills.md](references/pattern-fills.md)). Ask `要輸出成 A4 PDF 嗎？還是繼續修改？` Stop.
 
 | User | Action |
 |---|---|
 | 輸出 / PDF / 可以 | **next turn** step 7 |
 | 兩格 / 四格 / 直式 | next turn print-pack |
 | 只改X | [local-redraw.md](references/local-redraw.md) → QC → embed PNG again |
+| 天空用菱格 / 海用波浪帶 / 道路用山形 | [pattern-fills.md](references/pattern-fills.md) on that region → QC → embed PNG |
 | 記住 / 以後都用X | write memory. PDF still needs yes. |
 
 ### 6b. Memory
 
-Coordinator writes. Never name the tool. Reply `已記住…`. `輸出 PDF` does not change default intensity.
+Coordinator writes. Never name the tool. Reply `已記住…`. `輸出 PDF` does not change default intensity. Same pattern requested twice → persist as a habit for that kind of region.
 
 ### 7. Deliver PDF — only after they said yes
 
@@ -125,4 +129,4 @@ If vectorize fails, `compose_a4_pdf.py`. Never upload SVG to ibon.
 
 ## Safety
 
-Family photos are in scope. Refuse sexualized / gore / official character sheets.
+Family photos are in scope. Refuse sexualized / gore / official character sheets. Pattern fills are geometric homages, not ceremonial indigenous works.

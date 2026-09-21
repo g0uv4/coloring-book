@@ -1,50 +1,28 @@
 # Image elements — after the plate
 
-After QC SHIP, show the clean plate **and** a list of **recognized parts already on that plate**. This is not a new analysis of the photo and not a request for the user to invent objects.
+After QC SHIP, show the clean plate **and** a list of **recognized parts already on that plate**.
 
-The list tells them what they can say `只改X` / `拿掉X` / `眼鏡再簡` about.
+The list tells them what they can say `只改X` / `拿掉X` / `眼鏡再簡` / `天空用菱格紋` about.
 
 ## Format (user language)
 
 ```text
-圖片元素（可以說「只改X」或「拿掉X」）
+圖片元素（可以說「只改X」「拿掉X」或加格紋）
 - 人數：{n}
 - 眼鏡
-- 頭髮（馬尾 / 瀏海 / …）
-- 衣服條紋
-- 帽子 / 手錶
-- 雲朵 / 穹頂
+- 頭髮
+- 天空 / 海面 / 道路
 ```
 
-English:
+If sky / sea / road / wall / floor is listed, add:
 
 ```text
-Elements on this plate (say "only change X" or "drop X"):
-- people count: {n}
-- glasses
-- hair
-- …
+大面積可加格紋：菱格紋、百步蛇紋、變形蟲紋、山形紋、波浪帶紋
+例如「天空用菱格紋」
 ```
 
-## What may appear
+## Rules
 
-Only parts that **are drawn on the plate** (or were confirmed on the keep list and survived QC):
-
-- count of people / pets
-- glasses, hat, earrings, watch
-- hair silhouette / bun / bangs
-- clothing blocks or stripes
-- named props (phone, board, bowl, faucet, collar)
-- large background masses actually drawn (cloud band, hood, doorway)
-
-## What must not appear
-
-- omitted textures (knit mesh, wood grain) — those were dropped
-- things not in the photo
-- QC numbers, file paths, intensity jargon unless they asked
-- a second inventory card (that already happened before generate)
-
-Cap at ~12 lines. Group tiny bits (`藍瓜+香菇碗` as one line).
-
-If they name a listed element → local redraw (6c) or drop it and regenerate once.
-If they name something not listed and not in the photo → refuse that add.
+- Only list parts on this plate.
+- Cap at ~12 lines.
+- Pattern fills: [pattern-fills.md](pattern-fills.md). Opt-in. Large fields only.

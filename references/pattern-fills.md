@@ -1,54 +1,70 @@
 # Pattern fills — large empty regions only
 
-Sky, sea, road, and floor often stay one blank pocket. That is correct by default. If the user asks to fill those regions with a lattice so they are easier to color, use **one** of the five packs below.
+Sky, sea, road, wall, and floor often leave a huge white field that is dull to color. The user may ask to fill **that named region** with a repeating closed-cell pattern.
 
-Never apply a pack to faces, hair, animals, clothes, or small props unless they name that object.
+Default is **no pattern**. Never auto-pattern a first plate.
 
-This is a **geometric homage** for a coloring page. It is not a ceremonial replica, not a tribal emblem, and not a filled texture hatch.
+These are coloring-book geometries inspired by common Taiwan textile motifs. They are not ceremonial replicas, not tribal authorization, and not a substitute for living indigenous design. Keep cells large enough for a crayon.
 
-## When
+## When to offer
 
-| User says | Do |
-|---|---|
-| 天空用菱格紋 / 海用山形紋 / fill the sky with diamonds | local-redraw that region with the matching pack |
-| 大塊空白難以上色 / 要格紋 | show the five-pack table and wait for a name |
-| nothing about fills | leave large regions empty white |
+After the plate preview, if a listed element is a large empty field (sky / sea / water / road / pavement / wall / floor), add one line:
 
-Default intensity does **not** turn pattern fills on.
+```text
+大面積可加格紋：菱格紋、百步蛇紋、變形蟲紋、山形紋、波浪帶紋
+例如「天空用菱格紋」「海用波浪帶」「道路用山形紋」
+```
 
-## The five packs
+Do not offer patterns on faces, hair, hands, small props, or the otter-sized objects.
 
-Every cell is a **closed white pocket**. Same medium felt-tip as the rest of the plate. Cell width on A4 ≈ a crayon tip to a thumbnail. About 6–14 cells across a sky band. If a cell would be hairline, omit it.
+## The five patterns
 
-| id | Name | Geometry | Best on | Do not |
-|---|---|---|---|---|
-| `rhombus` | **菱格紋** | Tessellated diamonds. Inspired by Atayal / Truku / Seediq woven rhombus (often called 祖靈之眼 in popular writing). | sky, wall, floor | nested micro-diamonds |
-| `snake-scale` | **蛇鱗菱紋** | A band of large stacked diamonds — a simplified snake-back lattice. Inspired by Paiwan / Rukai / Bunun scale geometry. | sea band, road, shawl-like slab | draw a snake, fangs, or a chiefly totem |
-| `zigzag` | **山形曲折紋** | Horizontal chevron / mountain bands. Common geometric weave across several nations. | sea, hills, road | lightning bolts as clip-art |
-| `star8` | **八角星網** | Large 8-point stars whose gaps are also closed pockets. Inspired by Amis star embroidery geometry. | sky | tiny sparkles, 20-point lace |
-| `curl` | **捲曲帶紋** | Large closed kidney / paisley blobs in a row. This is the coloring-book stand-in for what people in Taiwan often call 變形蟲紋 (that name is popular for paisley / boteh, **not** a traditional Indigenous weave). | sea, cloth slab | amoeba hatch, overlapping lace |
+| id | 中文 | Use on | What to draw |
+|---|---|---|---|
+| `rhombus` | 菱格紋 | sky, wall, floor | A grid of **large** diamonds. Each diamond is one closed white pocket. About 8–20 cells in the region. |
+| `hundred-pacer` | 百步蛇紋 | sky, wall, sash-like bands | A **row of large diamonds** (snake-back). Every 4th unit may be a simple triangular head. No realistic scales, no tiny lace. |
+| `amoeba` | 變形蟲紋 | sky, sea, ground | Packed **large irregular closed blobs**. Neighbors share walls. No speckles. |
+| `mountain` | 山形紋 | road, wall, distant hills, sky band | Horizontal **chevron / zigzag bands**. 3–6 bands, each a closed strip. |
+| `wave` | 波浪帶紋 | sea, water, sky | Parallel **undulating bands** (3–8). Each band is a closed pocket. No ripple hatch. |
 
-## Prompt add-on (append after the Open-Line lock)
+Aliases the user may type:
+
+- 菱形 / 菱格 / diamond / 祖靈之眼 → `rhombus`
+- 百步蛇 / 蛇紋 / snake → `hundred-pacer`
+- 變形蟲 / 雲漩 / amoeba → `amoeba`
+- 山形 / 鋸齒 / 山脈 / zigzag → `mountain`
+- 波浪 / 海紋 / wave → `wave`
+
+## Cell-size law (QC)
+
+- Simple: ~6–10 cells in the whole region.
+- Medium: ~8–16.
+- Advanced: ~12–24. Still crayon-sized. Never hairline mesh.
+- A cell smaller than a fingernail on A4 is forbidden — merge it.
+- Pattern lines use the **same medium felt-tip** as the rest of the plate.
+- Interiors stay paper white. Pattern is outlines, not black fill.
+- Pattern stays **inside** the named region. Do not let diamonds crawl onto faces or the bridge.
+
+## How to apply
+
+This is a [local-redraw.md](local-redraw.md) of **one region** on `CLEAN_PLATE`.
 
 ```
-Fill ONLY this named region: {REGION}.
-Use pattern pack {PACK_ID} ({PACK_NAME}).
-The pattern is a lattice of CLOSED medium-thick outlines with PAPER-WHITE interiors.
-Each cell must be large enough for a crayon.
-Do not fill any other region. Do not paint cells black. Do not add hatch inside a cell.
-Do not draw a realistic snake, face totem, or ceremonial badge.
+Edit ONLY {REGION} of the existing coloring plate.
+Fill {REGION} with the {PATTERN} coloring-book pattern:
+{PATTERN_RECIPE}
+Keep every other outline identical.
+Each pattern cell is a CLOSED white pocket with a medium-thick outline.
+Do not hatch. Do not fill cells black. Do not decorate faces.
 ```
 
 Then cleanup + QC + embed PNG. PDF still waits.
 
-## QC extras for a patterned region
+If QC fails because the pattern is too dense: retry once with half as many cells.
 
-- Cells are closed. A crayon in one cell cannot leak into the next.
-- Cell count across the region ≤ ~14. More is FAIL (too dense).
-- The rest of the plate is unchanged.
-- No solid-black cells.
-- Pattern stays inside the named outline.
+## Must not
 
-## Cultural note (say this once, short)
-
-These packs are simplified coloring lattices inspired by published geometric weaves. They are not official tribal emblems. Paiwan / Rukai hundred-pacer imagery is historically restricted; this skill only uses a large diamond-scale lattice, never a snake figure.
+- Do not put 百步蛇 heads on a person's body.
+- Do not claim a tribe commissioned this page.
+- Do not mix two patterns in one region unless the user asked.
+- Do not pattern the whole page.
