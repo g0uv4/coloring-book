@@ -1,78 +1,82 @@
-# Pattern fills — judge the plate, offer five schemes
+# Pattern fills — judge five schemes per plate
 
-Large empty fields (sky, sea, water, road, pavement, wall, floor, field) are dull to color. After every plate preview that has at least one such field, the coordinator **must invent five schemes for this photo** and list them.
+Large empty fields (sky, sea, road, wall, floor, tabletop) are dull to color. After the first plate is on screen, the coordinator **judges this photo** and offers **exactly five** fill schemes. The user picks one (or says no).
 
-Do **not** reuse a fixed five-name catalog. Do **not** limit the vocabulary to 菱格 / 百步蛇 / 變形蟲. Those names are allowed when they fit. So are stripes, scallops, bricks-as-slabs, concentric arcs, cloud pockets, window bands, chevrons, stars, pebbles.
+Default on the first plate is still empty white. Never auto-apply a pattern. Never generate five sample pictures unless they ask to see one scheme.
 
-Default is still **no pattern on the first plate**. Never bake a fill until they pick a numbered scheme or say `天空用X`.
+## When this step runs
 
-## After preview — required block
-
-Look at the plate + the photo. Name the large blank fields. Then print exactly five options:
+After QC SHIP + 圖片元素, if the plate has at least one large empty field, print:
 
 ```text
-大面積空白（{fields}）可加格紋。這張照的五種方案：
-1. {name} — {which field} — {one-line geometry}
+大面積填滿（選 1–5，或說不要）
+1. {區域} · {名稱} — {一句畫法}
 2. …
 3. …
 4. …
 5. …
-回「1」「天空用菱格」或「先不加格紋」。
 ```
 
-Do **not** generate five sample images unless they ask `先看樣張`. Text recipes are the offer. Sample-image failure is not an excuse to skip the five names.
+If there is no large empty field (tight headshot), skip this block.
 
-## How to judge the five
+Do not offer patterns on faces, hair, hands, small props, animals, or lettering.
 
-Pick for **this** photo. Mix region + rhythm:
+## How to pick the five (do this every time)
 
-| Photo cue | Lean toward |
+Look at the photo and the plate. Invent five schemes **for these blanks**. Do not paste the same five names on every job.
+
+Rules for the set of five:
+
+1. Name the **region** in each row (`天空` / `海` / `步道` / `牆`).
+2. At least two schemes target the largest blank.
+3. At least one scheme is simple bands or large slabs (easy for kids).
+4. At least one scheme is denser but still crayon-sized cells (advanced).
+5. Match the scene: waterfront → waves / scales / sail triangles; kitchen → tile diamonds / wood-slab bands (not wood grain); mountain → chevrons; night sky → large star pockets, not glitter.
+6. You may use library motifs below **or invent** a closed-cell geometry. Invented names must be short enough to reuse (`雲塊紋`, `魚鱗紋`, `石板紋`).
+7. Indigenous-inspired names (菱格、百步蛇、山形) are allowed when they fit. They are geometric homages, not ceremonial replicas. Do not put snake heads on a person.
+
+## Library (steal or ignore)
+
+| Motif | Draw as |
 |---|---|
-| Big empty sky | large diamonds, cloud pockets, concentric arcs, sparse stars, horizontal bands |
-| Sea / river | wave bands, pebble ovals, long chevrons, scallops |
-| Road / pavement | chevron bands, large flagstones, 3–5 stripes |
-| Wall / building face | window-sized rectangles, brick slabs (few), diamond grid |
-| Indoor floor | wood-plank slabs, large tiles |
-| Mountain / hillside | mountain zigzags, terrace bands |
-| Night sky | sparse 6–8 pointed stars as closed pockets, not sparkles |
-| Fabric / blanket already in the photo | echo a simplified weave from the photo |
+| 菱格紋 | large diamonds, one pocket each |
+| 百步蛇紋 | diamond chain; optional triangular head every 4th cell |
+| 變形蟲紋 | packed irregular blobs sharing walls |
+| 山形紋 | 3–6 horizontal chevron bands |
+| 波浪帶紋 | 3–8 undulating bands |
+| 魚鱗紋 | large overlapping scale arcs |
+| 雲塊紋 | 5–12 cloud-shaped closed masses |
+| 石板紋 | 4–10 big pavement slabs, not a tile grid |
+| 帆三角 | large triangles pointing one way |
+| 同心圓 | 3–5 nested rings in one corner of sky, rest empty |
 
-Rules for inventing a scheme:
-
-1. Name it in the user's language (short, 2–6 characters if Chinese).
-2. Say **which field** it applies to.
-3. Geometry is closed cells a crayon can fill. ~6–24 cells in that field. Same medium stroke.
-4. At least two of the five should target different fields if the plate has more than one blank (sky + sea, not five sky-only variants).
-5. One of the five may be `保持空心` (leave that field blank) so they can refuse fills without hunting for the words.
-6. Do not put a pattern on faces, hair, hands, animals, or small props.
-7. Indigenous-inspired names (菱格、蛇鱗菱、山形、八角星) are fine as **geometry labels**. Never claim a tribe commissioned the page. Never draw a realistic snake or a ceremonial badge.
-
-## Apply
-
-This is a [local-redraw.md](local-redraw.md) of one named region on `CLEAN_PLATE`.
-
-```
-Edit ONLY {REGION} of the existing coloring plate.
-Fill {REGION} with this coloring-book lattice: {GEOMETRY}.
-Each cell is a CLOSED white pocket, medium-thick outline, crayon-sized.
-Keep every other outline identical. No hatch. No black-filled cells.
-```
-
-Cleanup + QC + embed PNG. PDF still waits.
-If QC says too dense: retry once with half the cells.
-
-## Cell-size law
+## Cell-size law (QC)
 
 - Simple: ~6–10 cells in the region.
 - Medium: ~8–16.
-- Advanced: ~12–24. Still fingernail-or-larger on A4.
-- Same felt-tip weight as the plate.
-- Pattern stays inside the named outline.
+- Advanced: ~12–24. Still crayon-sized.
+- A cell smaller than a fingernail on A4 is forbidden — merge it.
+- Same medium felt-tip as the plate. White interiors. No black fill.
+- Pattern stays inside the named region.
+
+## How to apply
+
+User says `1` / `天空用菱格` / `海用波浪帶`. Then [local-redraw.md](local-redraw.md) that region only:
+
+```
+Edit ONLY {REGION} of the existing coloring plate.
+Fill {REGION} with {PATTERN}: {one-sentence recipe}.
+Keep every other outline identical.
+Each cell is a CLOSED white pocket, medium-thick outline.
+Do not hatch. Do not fill cells black. Do not decorate faces.
+```
+
+Cleanup + QC + embed PNG. PDF still waits.
+If QC fails on density, retry once with half as many cells.
 
 ## Must not
 
-- Do not lock the skill to five immortal motif names.
-- Do not skip the five-scheme block when a large blank exists.
-- Do not generate five Imagine samples by default (they fail often and slow the turn).
-- Do not pattern the whole page.
-- Do not mix two patterns in one region unless they asked.
+- Do not lock every job to the same five catalog names.
+- Do not generate five preview pictures of the motifs (text list is enough).
+- Do not pattern the whole page or faces.
+- Do not claim a tribe commissioned the page.

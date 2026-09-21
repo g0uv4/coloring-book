@@ -1,28 +1,14 @@
 # Image elements — after the plate
 
-After QC SHIP, show the clean plate **and** a list of **recognized parts already on that plate**.
+After QC SHIP, show the clean plate and the recognized parts.
 
-The list tells them what they can say `只改X` / `拿掉X` / `眼鏡再簡` / `天空用菱格紋` about.
-
-## Format (user language)
+Then, if a large empty field exists, the coordinator **judges five schemes** using [pattern-fills.md](pattern-fills.md). Do not paste a fixed catalog.
 
 ```text
-圖片元素（可以說「只改X」「拿掉X」或加格紋）
-- 人數：{n}
-- 眼鏡
-- 頭髮
-- 天空 / 海面 / 道路
+圖片元素（可以說「只改X」或選格紋 1–5）
+- …
+
+大面積填滿（選 1–5，或說不要）
+1. 天空 · 菱格紋 — …
+2. …
 ```
-
-If sky / sea / road / wall / floor is listed, add:
-
-```text
-大面積可加格紋：菱格紋、百步蛇紋、變形蟲紋、山形紋、波浪帶紋
-例如「天空用菱格紋」
-```
-
-## Rules
-
-- Only list parts on this plate.
-- Cap at ~12 lines.
-- Pattern fills: [pattern-fills.md](pattern-fills.md). Opt-in. Large fields only.

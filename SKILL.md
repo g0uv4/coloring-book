@@ -1,11 +1,11 @@
 ---
 name: coloring-book
-description: Convert an uploaded photograph into a coloring-book page. For a pet or portrait, draw in the same turn and embed the PNG in chat. Large empty fields (sky, sea, road) may take an optional pattern fill after preview. A4 PDF only after the user confirms. Use when they upload a photo and ask for a coloring book, coloring page, 著色本, 著色頁, 線稿, or line art for coloring. Never fill interiors black. Never PDF before confirmation.
+description: Convert an uploaded photograph into a coloring-book page. After the plate preview, if large empty fields exist, judge and offer five pattern-fill schemes for this photo. A4 PDF only after the user confirms. Use when they upload a photo and ask for a coloring book, coloring page, 著色本, 著色頁, 線稿, or line art for coloring. Never fill interiors black. Never PDF before confirmation.
 license: MIT
 compatibility: Grok, Codex, ChatGPT, Claude Code, Antigravity, Gemini CLI, Kimi, Cursor, any agent with an image tool plus a filesystem
 metadata:
-  version: "1.9.6"
-  short-description: Photo to Open-Line Plate; optional pattern fills; preview PNG; vector A4 PDF after confirm
+  version: "1.9.7"
+  short-description: Photo to Open-Line Plate; five judged pattern schemes; preview PNG; vector A4 PDF after confirm
   author: g0uv4
 ---
 
@@ -19,114 +19,45 @@ Not a website. Not a multi-photo book. Never tell the user to type `/memory-with
 
 ## Hard stops
 
-1. Pet / portrait / one object + a photo → print a short keep list **and draw this turn**. Do not stop at the list. See [references/inventory-card.md](references/inventory-card.md).
-2. After QC, **embed `plate-clean.png` as an image in the chat**. A path, a PDF, or a list is not a preview. See [references/preview-in-chat.md](references/preview-in-chat.md).
-3. Preview turn: do **not** run `vectorize_plate.py`, `compose_a4_pdf.py`, or `pipeline.py --pdf`. Do not say 「走管線」.
-4. Dark fur / hair / clothes stay **white pockets** with outlines. A filled poster is QC FAIL. Retry once. Never hide it in a PDF.
-5. Pattern fills are **opt-in** on named large fields only (sky / sea / road / wall / floor). See [references/pattern-fills.md](references/pattern-fills.md). Never auto-pattern faces.
+1. Pet / portrait / one object + a photo → print a short keep list **and draw this turn**. Do not stop at the list.
+2. After QC, **embed `plate-clean.png` as an image in the chat**.
+3. Preview turn: no `vectorize_plate.py`, no `compose_a4_pdf.py`, no `pipeline.py --pdf`. Do not say 「走管線」.
+4. Dark fur / hair / clothes stay white pockets. A filled poster is QC FAIL.
+5. If the plate has a large empty field, **judge five fill schemes for this photo** ([references/pattern-fills.md](references/pattern-fills.md)). Do not reuse the same five names every time. Do not apply a pattern until they pick one.
 
 ## Speed
 
 - `check_installation.py` once per session.
-- Load only the refs you need. Do not dump examples 01–07.
+- Load only the refs you need.
 - Generate once. QC overlay only on FAIL.
 - Cleanup `--min-long-edge 2400`.
 
 ## Locked style
 
-[references/style-guide.md](references/style-guide.md) and [references/intensity.md](references/intensity.md).
-
-Medium-thick black outlines, paper-white interiors, closed loops. Hair, fur, clothes, furniture, sky stay white. Only pupils / a tiny nose / a button may be solid black.
-
-| Intensity | When |
-|---|---|
-| simple | 簡單 / 小孩 |
-| medium | default / 中等 |
-| advanced | 高階 — more named parts, same stroke, still white interiors |
+Medium-thick black outlines, paper-white interiors, closed loops. Intensity changes which photo parts you keep, not line density.
 
 ## Workflow
 
-### 1. Install (once)
+### 1–5
 
-```bash
-python3 scripts/check_installation.py
-```
-
-### 2. Inspect
-
-[references/analysis-method.md](references/analysis-method.md).
-Pet / dark object: [references/recipes.md](references/recipes.md).
-Memory: [references/style-memory.md](references/style-memory.md) — recall silently.
-
-### 2d. Inventory
-
-[references/inventory-card.md](references/inventory-card.md).
-
-| Situation | Action |
-|---|---|
-| Pet, portrait, or one object + photo attached | Short keep/omit **and generate this turn** |
-| User said 先畫 / 給我看 / 直接畫 | Generate this turn |
-| Kitchen / group / clutter | Show the card and wait for `依這份畫` |
-
-If they already named a pattern in the same message as the photo (`天空用菱格紋`), keep the first plate empty in that field, then apply the pattern as a local redraw after QC — or bake it in if the region is obvious.
-
-### 3. Generate — this host's image tool
-
-[references/image-backend.md](references/image-backend.md) and [references/prompt-templates.md](references/prompt-templates.md).
-
-| Host | Tool |
-|---|---|
-| Grok | Imagine / `imagine_image_to_image` |
-| OpenAI / Codex | `image_gen` / ChatGPT Images |
-| Antigravity / Gemini CLI | Nano Banana Pro, else Nano Banana 2 |
-| Kimi Agent | `generate_image` |
-| Claude Code / Cursor / others | first image-edit tool already in this session |
-
-Image-to-image on `USER_PHOTO`. Aspect 2:3 or 3:2. Save `plate-raw.png`. If no image tool exists, stop.
-
-### 4. Cleanup
-
-```bash
-python3 scripts/cleanup_lines.py plate-raw.png plate-clean.png --threshold 128 --min-long-edge 2400 --smooth 1.2
-```
-
-### 5. QC
-
-[references/qc-inspector.md](references/qc-inspector.md).
-
-```bash
-python3 scripts/qc_plate.py plate-clean.png --report qc-report.json
-```
-
-Overlay only on FAIL. Fill / too-dark / not-enough-white → retry with the dark-subject add-on. QC FAIL = show the PNG + reason, **no PDF**.
+Install → inspect → inventory → host image tool → cleanup → QC as in 1.9.6. Host table: [references/image-backend.md](references/image-backend.md).
 
 ### 6. Preview in chat — wait
 
-[references/preview-in-chat.md](references/preview-in-chat.md) and [references/element-list.md](references/element-list.md).
-
-Embed `plate-clean.png`. List 圖片元素. If sky / sea / road / wall / floor is on the plate, offer pattern fills ([pattern-fills.md](references/pattern-fills.md)). Ask `要輸出成 A4 PDF 嗎？還是繼續修改？` Stop.
+Embed `plate-clean.png`. List 圖片元素.
+If sky / sea / road / wall / floor exists, print **five judged schemes** from [pattern-fills.md](references/pattern-fills.md). Ask PDF or edit. Stop.
 
 | User | Action |
 |---|---|
-| 輸出 / PDF / 可以 | **next turn** step 7 |
-| 兩格 / 四格 / 直式 | next turn print-pack |
-| 只改X | [local-redraw.md](references/local-redraw.md) → QC → embed PNG again |
-| 天空用菱格 / 海用波浪帶 / 道路用山形 | [pattern-fills.md](references/pattern-fills.md) on that region → QC → embed PNG |
+| 輸出 / PDF / 可以 | next turn step 7 |
+| 1–5 / `天空用…` | apply that scheme to the named region → QC → embed PNG |
+| 只改X | local-redraw → QC → embed PNG |
 | 記住 / 以後都用X | write memory. PDF still needs yes. |
-
-### 6b. Memory
-
-Coordinator writes. Never name the tool. Reply `已記住…`. `輸出 PDF` does not change default intensity. Same pattern requested twice → persist as a habit for that kind of region.
 
 ### 7. Deliver PDF — only after they said yes
 
-```bash
-python3 scripts/vectorize_plate.py plate-clean.png plate.svg \
-  --pdf plate-a4.pdf --orientation portrait --margin-mm 14
-```
-
-If vectorize fails, `compose_a4_pdf.py`. Never upload SVG to ibon.
+`vectorize_plate.py` → A4. Fallback `compose_a4_pdf.py`. Never upload SVG to ibon.
 
 ## Safety
 
-Family photos are in scope. Refuse sexualized / gore / official character sheets. Pattern fills are geometric homages, not ceremonial indigenous works.
+Family photos in scope. Refuse sexualized / gore / official character sheets. Pattern schemes are geometric, not ceremonial indigenous works.
