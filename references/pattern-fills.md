@@ -23,8 +23,8 @@ Do not offer patterns on faces, hair, hands, small props, animals, or lettering.
 
 ## Multi-pick
 
-`2.3.5`, `2 3 5`, or `2、3、5` means apply schemes 2 + 3 + 5 in **one** local-redraw of `CLEAN_PLATE`.
-Different numbers must target different regions (or the later one replaces the earlier on the same region).
+`2.3.5`, `2 3 5`, or `2、3、5` means apply schemes 2 + 3 + 5. One crop+paste per distinct region (same region: one crop, both schemes in the prompt).
+Different numbers must target different regions. Two schemes for one region share that crop.
 Keep faces and named props frozen.
 
 ## How to pick the five (do this every time)
@@ -67,17 +67,18 @@ A tight 菱格 mesh usually fails QC (`too many dangling ends`, `ink speckle`). 
 
 ## How to apply
 
-Then [local-redraw.md](local-redraw.md) the named region(s):
+On a copy of the plate. One box per chosen region. Faces are not inside any box. Do not send the full plate to the image tool for a fill.
+
+Same crop / paste as [local-redraw.md](local-redraw.md): one `region_edit.py` crop+paste per distinct region. Same region: one crop, both schemes in the prompt. Do not run `cleanup_lines.py` on the full plate.
 
 ```
-Edit ONLY {REGION} of the existing coloring plate.
-Fill {REGION} with {PATTERN}: {one-sentence recipe}.
-Keep every other outline identical.
-Each cell is a CLOSED white pocket, medium-thick outline.
-Do not hatch. Do not fill cells black. Do not decorate faces.
+This file is one crop of {REGION}, not the full page.
+Fill the crop with {PATTERN}: {one-sentence recipe}.
+Each cell is a closed white pocket, medium-thick outline.
+Do not hatch. Do not fill cells black.
 ```
 
-Cleanup + QC + embed PNG. PDF still waits.
+QC + embed PNG. PDF still waits.
 
 If QC fails on density / dangling ends: retry **once** with half as many cells (sky 菱格 → about 8 large diamonds, not a grid).
 Second fail → show the plate, name the QC fail, **do not PDF** unless they still say 輸出.

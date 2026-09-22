@@ -54,7 +54,7 @@ If sky / sea / road / wall / floor exists, print **five judged schemes**. Ask PD
 |---|---|
 | 輸出 / PDF / 可以 | next turn step 7 |
 | 1–5 / `2.3.5` / `天空用…` | apply those schemes → QC → embed PNG |
-| 只改X | local-redraw → QC → embed PNG |
+| 只改X | region_edit.py crop then paste, then QC → embed PNG. |
 | 記住 / 以後都用X | write memory. PDF still needs yes. |
 
 ### 7. Deliver PDF — only after they said yes
