@@ -15,6 +15,7 @@ REQUIRED_FILES = [
     "references/style-memory.md",
     "references/ibon-print.md",
     "scripts/cleanup_lines.py",
+    "scripts/region_edit.py",
     "scripts/compose_a4_pdf.py",
     "scripts/qc_plate.py",
     "scripts/vectorize_plate.py",
